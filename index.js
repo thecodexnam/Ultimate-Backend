@@ -1,10 +1,10 @@
 import http, { request } from "http"
 
 const server = http.createServer((request,Response)=>{
-    Response.end("Hello this is my first server")
+    Response.end("Welcome to my server")
 })
 
-server.listen(3000,()=>{
-    
+server.listen(4000,()=>{
+    console.log("Server is Started")
 })
 
