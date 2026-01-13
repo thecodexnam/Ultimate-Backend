@@ -1,0 +1,12 @@
+{
+  "name": "ultimate-backend",
+  "version": "1.0.0",
+  "description": "backend ",
+  "main": "index.js",
+  "scripts": {
+    "dev": "node index.js"
+  },
+  "author": "Naman Yadav",
+  "license": "ISC",
+  "type": "module"
+}
