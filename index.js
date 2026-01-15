@@ -3,22 +3,26 @@ const app = express()
 
 const port = 4000;
 
-app.get("/",(req,res)=>{
-    res.send("Hello this is home page")
-})
+// app.get("/",(req,res)=>{
+//     res.send("Hello this is home page of server")
+// })
+
 app.post("/about",(req,res)=>{
-    res.send("Hello this is About")
-})
-app.get("/contact",(req,res)=>{
-    res.send("Hello Contact")
+    res.send("Hello this is About page and we used Post in this server")
 })
 
-app.get("/json",(req,res)=>{
-    res.json({
-        name:"Naman",
-        course:"Computer Application"
-    })
+app.post("/",(req,res)=>{
+    let body = req.body
+    console.log(body)
+    res.send()
 })
+
+// app.get("/json",(req,res)=>{
+//     res.json({
+//         name:"Naman",
+//         course:"Computer Application"
+//     })
+// })
 
 app.listen(port,()=>{
     console.log("Server is Started at port no ",port)
