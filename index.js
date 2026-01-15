@@ -1,34 +1,28 @@
 import express from "express"
-const server = express()
+const app = express()
 
 const port = 4000;
 
-server.get("/code",(req,res)=>{
-    res.send("here is our new server")
+app.get("/",(req,res)=>{
+    res.send("Hello this is home page")
+})
+app.post("/about",(req,res)=>{
+    res.send("Hello this is About")
+})
+app.get("/contact",(req,res)=>{
+    res.send("Hello Contact")
 })
 
-server.listen(4000,()=>{
-    console.log("Our new Server is Started")
+app.get("/json",(req,res)=>{
+    res.json({
+        name:"Naman",
+        course:"Computer Application"
+    })
 })
 
-
-// const app = express()
-
-// const port = 4000;
-
-// app.get("/",(req,res)=>{
-//     res.send("Hello this is home page")
-// })
-// app.get("/about",(req,res)=>{
-//     res.send("Hello this is About")
-// })
-// app.get("/contact",(req,res)=>{
-//     res.send("Hello Contact")
-// })
-
-// app.listen(port,()=>{
-//     console.log("Server is Started at port no ",port)
-// })
+app.listen(port,()=>{
+    console.log("Server is Started at port no ",port)
+})
 
 
 
