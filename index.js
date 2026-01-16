@@ -41,31 +41,19 @@ let users = [
   }
 ]
 
-app.get('/user/1',(req,res)=>{
-    res.json(users[0])
-})
-
-app.get('/user/2',(req,res)=>{
-    res.json(users[1])
-})
-
-app.get('/user/3',(req,res)=>{
-    res.json(users[2])
-})
-
-app.get('/user/4',(req,res)=>{
-    res.json(users[3])
-})
-
-app.get('/user/5',(req,res)=>{
-    res.json(users[4])
-})
 
 
+app.get("/user/:id", (req, res) => {
+    const id = req.params.id;
 
-app.get("/user",(req,res)=>{
-    res.json(users)
-})
+    const existingUser = users.find(user => user.employeeId == id);
+
+    if (!existingUser) {
+        return res.status(404).json({ message: "User not found" });
+    }
+
+    res.json(existingUser);
+});
 
 
 app.listen(port,()=>{
