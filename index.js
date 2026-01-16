@@ -3,30 +3,98 @@ const app = express()
 
 const port = 4000;
 
-// app.get("/",(req,res)=>{
-//     res.send("Hello this is home page of server")
-// })
+let users = [
+  {
+    "employeeId": 101,
+    "name": "Amit Sharma",
+    "department": "Engineering",
+    "designation": "Software Developer",
+    "salary": 60000
+  },
+  {
+    "employeeId": 102,
+    "name": "Priya Verma",
+    "department": "HR",
+    "designation": "HR Executive",
+    "salary": 45000
+  },
+  {
+    "employeeId": 103,
+    "name": "Rahul Mehta",
+    "department": "Marketing",
+    "designation": "Marketing Manager",
+    "salary": 55000
+  },
+  {
+    "employeeId": 104,
+    "name": "Sneha Patel",
+    "department": "Finance",
+    "designation": "Accountant",
+    "salary": 50000
+  },
+  {
+    "employeeId": 105,
+    "name": "Karan Singh",
+    "department": "Operations",
+    "designation": "Operations Executive",
+    "salary": 48000
+  }
+]
 
-app.post("/about",(req,res)=>{
-    res.send("Hello this is About page and we used Post in this server")
+app.get('/user/1',(req,res)=>{
+    res.json(users[0])
 })
 
-app.post("/",(req,res)=>{
-    let body = req.body
-    console.log(body)
-    res.send()
+app.get('/user/2',(req,res)=>{
+    res.json(users[1])
 })
 
-// app.get("/json",(req,res)=>{
-//     res.json({
-//         name:"Naman",
-//         course:"Computer Application"
-//     })
-// })
+app.get('/user/3',(req,res)=>{
+    res.json(users[2])
+})
+
+app.get('/user/4',(req,res)=>{
+    res.json(users[3])
+})
+
+app.get('/user/5',(req,res)=>{
+    res.json(users[4])
+})
+
+
+
+app.get("/user",(req,res)=>{
+    res.json(users)
+})
+
 
 app.listen(port,()=>{
     console.log("Server is Started at port no ",port)
 })
+
+// app.use(express.json())
+
+// app.get("/",(req,res)=>{
+//     res.send("Hello this is home page of server")
+// })
+
+// app.get("/about",(req,res)=>{
+//     res.json("Hello this is About page and we used Post in this server")
+// })
+
+// app.post("/",(req,res)=>{
+//     let body = req.body
+//     console.log(body)
+//     res.send("Data received successfully")
+// })
+
+// // app.post("/",(req,res)=>{
+// //     let body = req.body
+// //     console.log(body)
+// //     res.send()
+// // })
+
+
 
 
 
