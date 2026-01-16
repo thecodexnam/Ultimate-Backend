@@ -41,19 +41,13 @@ let users = [
   }
 ]
 
+app.get("/user/:id",(req,res)=>{
+    let id = req.params.id;
 
+    let Exuser = users.find(user => user.employeeId == id)
+    res.json(Exuser)
+})
 
-app.get("/user/:id", (req, res) => {
-    const id = req.params.id;
-
-    const existingUser = users.find(user => user.employeeId == id);
-
-    if (!existingUser) {
-        return res.status(404).json({ message: "User not found" });
-    }
-
-    res.json(existingUser);
-});
 
 
 app.listen(port,()=>{
