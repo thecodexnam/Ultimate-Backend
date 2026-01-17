@@ -1,58 +1,79 @@
-import express from "express"
-const app = express()
+import http from 'http'
 
 const port = 4000;
 
-let users = [
-  {
-    "employeeId": 101,
-    "name": "Amit Sharma",
-    "department": "Engineering",
-    "designation": "Software Developer",
-    "salary": 60000
-  },
-  {
-    "employeeId": 102,
-    "name": "Priya Verma",
-    "department": "HR",
-    "designation": "HR Executive",
-    "salary": 45000
-  },
-  {
-    "employeeId": 103,
-    "name": "Rahul Mehta",
-    "department": "Marketing",
-    "designation": "Marketing Manager",
-    "salary": 55000
-  },
-  {
-    "employeeId": 104,
-    "name": "Sneha Patel",
-    "department": "Finance",
-    "designation": "Accountant",
-    "salary": 50000
-  },
-  {
-    "employeeId": 105,
-    "name": "Karan Singh",
-    "department": "Operations",
-    "designation": "Operations Executive",
-    "salary": 48000
-  }
-]
-
-app.get("/user/:id",(req,res)=>{
-    let id = req.params.id;
-
-    let Exuser = users.find(user => user.employeeId == id)
-    res.json(Exuser)
-})
+const server = http.createServer((re))
 
 
 
-app.listen(port,()=>{
-    console.log("Server is Started at port no ",port)
-})
+
+
+
+
+
+
+
+// import express from "express"
+// const app = express()
+
+// const port = 4000;
+
+// let users = [
+//   {
+//     "employeeId": 101,
+//     "name": "Amit Sharma",
+//     "department": "Engineering",
+//     "designation": "Software Developer",
+//     "salary": 60000
+//   },
+//   {
+//     "employeeId": 102,
+//     "name": "Priya Verma",
+//     "department": "HR",
+//     "designation": "HR Executive",
+//     "salary": 45000
+//   },
+//   {
+//     "employeeId": 103,
+//     "name": "Rahul Mehta",
+//     "department": "Marketing",
+//     "designation": "Marketing Manager",
+//     "salary": 55000
+//   },
+//   {
+//     "employeeId": 104,
+//     "name": "Sneha Patel",
+//     "department": "Finance",
+//     "designation": "Accountant",
+//     "salary": 50000
+//   },
+//   {
+//     "employeeId": 105,
+//     "name": "Karan Singh",
+//     "department": "Operations",
+//     "designation": "Operations Executive",
+//     "salary": 48000
+//   }
+// ]
+
+// app.get("/user/:id",(req,res)=>{
+//     let id = req.params.id;
+
+//     let Exuser = users.find(user => user.employeeId == id)
+//     res.json(Exuser)
+// })
+
+// app.get("/search",(req,res)=>{
+//   let a = req.query
+//   console.log(a)
+//   res.json(a)
+// })
+
+
+
+// app.listen(port,()=>{
+//     console.log("Server is Started at port no ",port)
+// })
 
 // app.use(express.json())
 
