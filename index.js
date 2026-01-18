@@ -1,34 +1,3 @@
-const arr = [10,30,45,23,53,53,12];
-let arr1 = [32,45,3,53,535,553]
-let combo = [10,203,320,[32,323,43,[4242,[42]]]]
-console.log(combo.flat());
-
-
-console.log(arr.concat(arr1))
-
-let total = arr.reduce((acc,curr)=> acc +curr);
-console.log(total);
-
-let slice = arr.slice(2,4)
-console.log(slice);
-
-let splice = arr.splice(1,2,3,4)
-console.log(splice)
-
-console.log(arr);
-
-
-
-
-
-
-
-
-
-
-
-
-
 // import express from "express"
 // const app = express()
 
