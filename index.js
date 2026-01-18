@@ -1,41 +1,54 @@
 import express from "express"
 const server = express()
 
-const port = 4000;
+const port  = 4000;
 
-const users = [
-    { name: "Naman",
-      AGE : 20,  
-     },
-    { name: "rohan" },
-    { name: "Karan" },
-]
-
-server.get("/", (req, res) => {
-    res.send("This is the home page of your 4000 server port")
+server.get("/",(req,res)=>{
+    res.send(`<h1>Hello Brother</h1>
+        <p>I'm naman and i can speak english Fluently </p>`)
 })
 
-server.get("/user", (req, res) => {
-    const name = req.query.name
+server.listen(port)
 
-    if (!name) {
-        return res.send("Please provide name in query")
-    }
+// params and Query in backend 
+// import express from "express"
+// const server = express()
 
-    const user = users.find(
-        u => u.name.toLowerCase() === name.toLowerCase()
-    )
+// const port = 4000;
 
-    if (!user) {
-        return res.send("User not found")
-    }
+// const users = [
+//     { name: "Naman",
+//       AGE : 20,  
+//      },
+//     { name: "rohan" },
+//     { name: "Karan" },
+// ]
 
-    res.json(user)
-})
+// server.get("/", (req, res) => {
+//     res.send("This is the home page of your 4000 server port")
+// })
 
-server.listen(port, () => {
-    console.log(`Server running on port ${port}`)
-})
+// server.get("/user", (req, res) => {
+//     const name = req.query.name
+
+//     if (!name) {
+//         return res.send("Please provide name in query")
+//     }
+
+//     const user = users.find(
+//         u => u.name.toLowerCase() === name.toLowerCase()
+//     )
+
+//     if (!user) {
+//         return res.send("User not found")
+//     }
+
+//     res.json(user)
+// })
+
+// server.listen(port, () => {
+//     console.log(`Server running on port ${port}`)
+// })
 
 
 
