@@ -7,3 +7,5 @@ server.get("/",(req,res)=>{
     res.json({name:"Naman",age:20,course:"BCA"})
 })
 
+server.listen(port)
+
