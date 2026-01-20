@@ -7,5 +7,7 @@ server.get("/",(req,res)=>{
     res.json({name:"Naman",age:20,course:"BCA"})
 })
 
-server.listen(port)
+server.listen(port,()=>{
+    console.log(`Server is running on port ${port}`);
+})
 
