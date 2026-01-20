@@ -5,7 +5,7 @@ const App = () => {
   async function getRes() {
     const res = await fetch("http://localhost:4000/")
     let data = await res.json();
-    console.log(data)
+    console.log(`This is the value of ${data}`)
   }
 
   return (
