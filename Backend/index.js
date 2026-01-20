@@ -1,7 +1,10 @@
 import express from "express"
+import cors from "cors"
 
 const server = express()
-const port = 4000;
+
+server.use(cors())
+const port = 5000;
 
 server.get("/",(req,res)=>{
     res.json({name:"Naman",age:20,course:"BCA"})
