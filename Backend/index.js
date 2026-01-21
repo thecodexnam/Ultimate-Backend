@@ -57,27 +57,39 @@ import cors from "cors" // cross origin resourse
 // })
 
 
-// const server = express()
+const server = express()
 
 // server.use(cors({
 //     origin:"http://localhost:5173"
 // }))
 
-// server.use(express.json())
+server.use(express.json())
 
-// const port = 5000;
+let password = "naman123"
 
-// server.get("/",(req,res)=>{
-//     res.json({name:"Naman",age:20,course:"BCA"})
-// })
-
-// server.post("/",(req,res)=>{
-//     console.log(req.body);    
-//     res.send({success:true})
-// })
+server.use((req,res,next)=>{
+    if(req.body.pass != password){
+        res.send("Password does not match")
+    }
+    next()
+})
 
 
-// server.listen(port,()=>{
-//     console.log(`Server is running on port ${port}`);
-// })
+
+
+const port = 5000;
+
+server.get("/",(req,res)=>{
+    res.json({name:"Naman",age:20,course:"BCA"})
+})
+
+server.post("/",(req,res)=>{
+    console.log(req.body);    
+    res.status(201).send({success:true})
+})
+
+
+server.listen(port,()=>{
+    console.log(`Server is running on port ${port}`);
+})
 
