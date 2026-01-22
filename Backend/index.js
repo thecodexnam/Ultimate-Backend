@@ -1,5 +1,98 @@
 import express from "express"
-import cors from "cors" // cross origin resourse 
+
+const server = express()
+const port = 4444;
+
+server.use(express.json())
+
+let password = "naman123"
+
+server.get("/",(req,res)=>{
+    res.send("This is our Home Page")
+})
+
+server.use((req, res, next) => {
+    if (req.body && req.body.pass !== password) {
+        return res.send("Password does not match");
+    }
+    next();
+});
+
+server.listen(port,()=>{
+    console.log(`Our server is Running on Port no ${port}`)
+})
+
+// server.get("/user",(req,res)=>{
+//     const {name,age} = req.query
+//     res.send(`Fetching the user with name ${name} and ${age}`)
+// })
+
+
+// server.listen(port,()=>{
+//     console.log(`This server is running on port ${port}`)
+// })
+
+// app api == rest aPI
+// rest Api != Api
+
+
+
+// const users = [
+//   { id: 1, name: "Naman", role: "Developer" },
+//   { id: 2, name: "Amit", role: "Designer" },
+//   { id: 3, name: "Rohit", role: "Tester" }
+// ];
+
+
+// server.get("/",(req,res)=>{
+//     res.send("This is our express Js Server")
+// })
+
+// server.get("/user/:id",(req,res)=>{
+//     let id = Number(req.params.id)
+//     const user = users.find(user => user.id === id)
+
+//     if(!user){
+//         return res.status(404).send("User not Found")
+//     }
+//     else{
+//         res.json(user)
+//     }
+    
+// })
+
+
+
+
+
+// import http from "http";
+
+// const port = 5000;
+
+// const server = http.createServer((req, res) => {
+//   if (req.url === "/") {
+//     res.end("Hello I am the Home Page");
+//   }
+//   else if(req.url="user"){
+//     res.end("Hello I am user")
+//   }
+
+//   else if(req.url="codeX"){
+//     res.end("This is Your First")
+//   }
+// });
+
+// server.listen(port, () => {
+//   console.log(`Server is started on port no ${port}`);
+// });
+
+
+
+
+
+
+// import express from "express"
+// import cors from "cors" // cross origin resourse 
 
 // const server = express()
 // const port = 4000;
@@ -56,44 +149,28 @@ import cors from "cors" // cross origin resourse
 //     console.log('server is started on port no 4000')
 // })
 
-// server.use(cors({
-//     origin:"http://localhost:5173"
-// }))
 
 
-const server = express()
+// const port = 5000;
 
-server.use(express.json())
-
-// let password = "naman123"
-
-// server.use((req, res, next) => {
-//     if (req.body && req.body.pass !== password) {
-//         return res.send("Password does not match");
-//     }
-//     next();
-// });
-
-const port = 5000;
-
-server.get("/", (req, res) => {
-/* Request Header */
-    const userAgent = req.get("user-agent");
-    console.log(userAgent);
+// server.get("/", (req, res) => {
+// /* Request Header */
+//     const userAgent = req.get("user-agent");
+//     console.log(userAgent);
 
 /* Response Header */
-    res.set("x-username","Naman")
+//     res.set("x-username","Naman")
 
-    /* Remove Header */
-    res.removeHeader("x-powered-by")
+//     /* Remove Header */
+//     res.removeHeader("x-powered-by")
     
     
-    res.status(200).json({
-    name: "Naman",
-    age: 20,
-    course: "BCA"
-  });
-});
+//     res.status(200).json({
+//     name: "Naman",
+//     age: 20,
+//     course: "BCA"
+//   });
+// });
 
 
 // server.post("/",(req,res)=>{
@@ -101,7 +178,7 @@ server.get("/", (req, res) => {
 //     res.status(200).send({success:true})
 // })
 
-server.listen(port,()=>{
-    console.log(`Server is running on port ${port}`);
-})
+// server.listen(port,()=>{
+//     console.log(`Server is running on port ${port}`);
+// })
 
