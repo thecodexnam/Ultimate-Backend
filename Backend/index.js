@@ -12,7 +12,7 @@ const password = "Naman1234"
 
 
 server.get("/",(req,res)=>{
-    res.send("This is our Home Page")
+    res.send("<h1>This is our Home Page and also a Main Page </h1>")
 });
 
 //Post API to received Data from frontend

@@ -12,18 +12,19 @@ const App = () => {
   const handleInputs = async () => {
     try{
       const response = await axios.post("http://localhost:4444/",{
-        username,
-        city,
-        age,
+        username: username,
+        city:city,
+        age:age,
         pass: password,
       });
 
       console.log("Response:", response.data);
+      alert("Data Send Successfully")
     }
-    catch{
-      console.log("Error Occurred");
-    }
+    catch (err) {
+      alert(err.response?.data?.message || err.message);
   }
+}
     
 
   return (
