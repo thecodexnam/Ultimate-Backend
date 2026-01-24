@@ -1,26 +1,73 @@
 import express from "express"
+import cors from "cors"
 
 const server = express()
 const port = 4444;
 
-server.use(express.json())
+server.use(cors()) //It allow frontend Request. CORS is a security feature that controls which frontends are allowed to access a backend.
 
-let password = "naman123"
+server.use(express.json())// cliend Sends data is JSON , Server Doesn't understand JSON by default. express.json() is like a translator that convert JSON Data into JS Object
+
+const password = "Naman1234"
+
 
 server.get("/",(req,res)=>{
     res.send("This is our Home Page")
-})
+});
 
-server.use((req, res, next) => {
-    if (req.body && req.body.pass !== password) {
-        return res.send("Password does not match");
+//Post API to received Data from frontend
+server.post("/",(req,res)=>{
+    console.log("Received Data",req.body);
+    const{username,city,age,pass} = req.body;
+
+    //PassWord Check = if it is incorrect
+    if(pass !== password){
+        return res.status(401).json({message: "Password does not Match"})
     }
-    next();
+
+    //send Response back to frontend
+    res.json({
+        message:"Data Received Successfully",
+        name : username,
+        city,
+        age,
+    });
 });
 
 server.listen(port,()=>{
-    console.log(`Our server is Running on Port no ${port}`)
+    console.log(`Server is running on port ${port}`);
 })
+
+
+
+
+
+
+
+
+// import express from "express"
+
+// const server = express()
+// const port = 4444;
+
+// server.use(express.json())
+
+// let password = "naman123"
+
+// server.get("/",(req,res)=>{
+//     res.send("This is our Home Page")
+// })
+
+// server.use((req, res, next) => {
+//     if (req.body && req.body.pass !== password) {
+//         return res.send("Password does not match");
+//     }
+//     next();
+// });
+
+// server.listen(port,()=>{
+//     console.log(`Our server is Running on Port no ${port}`)
+// })
 
 // server.get("/user",(req,res)=>{
 //     const {name,age} = req.query
