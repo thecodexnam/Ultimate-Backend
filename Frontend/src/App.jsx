@@ -25,8 +25,13 @@ const App = () => {
       alert(err.response?.data?.message || err.message);
   }
 }
-    
 
+const GetData = async () => {
+  const response = await axios.get("http://localhost:4444/user");
+  console.log(response.data);
+};
+
+    
   return (
     <div>
       <input
@@ -54,6 +59,7 @@ const App = () => {
         onChange={(e) => setPassword(e.target.value)}
       />
       <button onClick={handleInputs}>Send Data</button>
+      <button onClick={GetData}>Get Data from Server</button>
     </div>
   );
 };
