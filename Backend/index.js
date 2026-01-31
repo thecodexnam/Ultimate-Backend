@@ -21,7 +21,6 @@ const users = [
     { id:4,
     name:"Something",
     role:"Tester"
-
     }
 
 ]
