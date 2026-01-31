@@ -2,16 +2,16 @@ import express from "express";
 import mongoose from "mongoose";
 import dotenv from 'dotenv'
 dotenv.config()
-import User from "./models/User.model.js";
-import { use } from "react";
+import cors from 'cors';
 import connectDB from "./Config/db.js";
 import userRouter from "./routes/User.routes.js";
 const server = express();
-const port = 5555;
+const port = process.env.PORT || 5000
+server.use(cors());
 server.use(express.json());
 server.use("/",userRouter)
 
-server.listen(port, () => {
+server.listen(5555, () => {
   console.log(`the server in run on port ${port}`);
   connectDB()
 });
