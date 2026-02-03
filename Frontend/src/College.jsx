@@ -1,9 +1,11 @@
 import React from 'react'
+import ClassComponent from './ClassComponent'
 
 const College = () => {
   return (
-    <div>
-        <h1>College</h1>
+    <div style={{backgroundColor:"orange",padding:"10px"}}>
+        <h1>College Component</h1>
+        <ClassComponent/>
     </div>
   )
 }
