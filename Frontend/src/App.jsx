@@ -1,9 +1,23 @@
-import React from 'react'
+import React, { useState } from 'react'
+import College from './College'
+import { SubjectContext } from './Contextdata'
+import Student from './Student'
 
 const App = () => {
+  const[subject,setSubject] = useState('')
   return (
-    <div style={{backgroundColor:"red"}}>
+    <div style={{backgroundColor:"red",padding:"10px"}}>
+      <SubjectContext.Provider value={subject}>
+        <select Value={subject} onChange={(e)=>setSubject(e.target.value)}>
+          <option value="">Select subject</option>
+          <option value="Data Structure">Data Structure</option>
+          <option value="Networking">Networking</option>
+          <option value="JavaScript">JavaScript</option>
+        </select>
       <h1>Context API</h1>
+      <button onClick={()=>setSubject('')}>Clear Subject</button>
+      <College/>
+      </SubjectContext.Provider>
     </div>
   )
 }
