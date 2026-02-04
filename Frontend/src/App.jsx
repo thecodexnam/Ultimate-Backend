@@ -8,7 +8,7 @@ const App = () => {
   return (
     <div style={{backgroundColor:"red",padding:"10px"}}>
       <SubjectContext.Provider value={subject}>
-        <select Value={subject} onChange={(e)=>setSubject(e.target.value)}>
+        <select Value = {subject} onChange={(e)=>setSubject(e.target.value)}>
           <option value="">Select subject</option>
           <option value="Data Structure">Data Structure</option>
           <option value="Networking">Networking</option>
