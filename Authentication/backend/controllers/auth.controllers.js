@@ -3,7 +3,7 @@ import User from "../models/user.model.js"
 import bcrypt from 'bcrypt'
 
 export const homepage = async(req,res) =>{
-    return res.json({message:"This is our Home Page"})
+    return res.json({message:"This is our Home Page that running on port no 8000"})
 }
 
 export const signup = async (req,res) => {
@@ -86,6 +86,7 @@ export const login = async(req,res)=>{
         })
 
         return res.status(200).json({user:{
+            message:"User Login ",
             firstName:existUser.firstName,
             lastName:existUser.lastName,
             userName:existUser.userName,
