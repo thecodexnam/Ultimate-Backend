@@ -9,3 +9,6 @@ const generateToken = async (id) =>{
 }
 
 export default generateToken;
+
+
+//👉 This code creates a JWT token for a user after login or signup.
