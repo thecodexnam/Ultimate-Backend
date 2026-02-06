@@ -1,6 +1,6 @@
 import { Router } from "express"
 import express from 'express'
-import { homepage, login, logout, signup } from "../controllers/auth.controllers.js";
+import {homepage, login, logout, signup} from "../controllers/auth.controllers.js";
 
 const authRouter = express(Router())
 
