@@ -19,7 +19,8 @@ export const signup = async (req,res) => {
             return res.status(400).json({message:"User already exist"})
         }
 
-        const hassedPassword = await bcrypt.hash(passWord,10)
+        const hassedPassword = await bcrypt.hash(passWord,10) //-in second parameter we set How many times the password is scrambled
+        //Converts the password into a hashed (unreadable) value
         const user = await User.create({
             firstName,
             lastName,
@@ -28,7 +29,7 @@ export const signup = async (req,res) => {
             email,
         })
 
-        let token;
+        let token;//Cookie name
         try {
             token = generateToken(user._id)
         } catch (error) {
@@ -36,12 +37,12 @@ export const signup = async (req,res) => {
         } 
 
         console.log(user);
-
+                            // |> The JWT token value
         res.cookie("token",token,{
-            httpOnly:true,
-            secure:process.env.NODE_ENVIRONMENT == "production",
-            sameSite:"strict",
-            maxAge:7*24*60*1000
+            httpOnly:true, //JavaScript cannot access this cookie Protects from XSS attacks Hackers can’t steal token using document.cookie
+            secure:process.env.NODE_ENVIRONMENT == "production", //Cookie only sent over HTTPS Enabled automatically in production
+            sameSite:"strict", //Prevents cookie from being sent to other websites Protects from CSRF attacks
+            maxAge:7*24*60*60*1000 //Cookie expiry time
         })
 
 
