@@ -1,10 +1,42 @@
+import { json } from "express"
 import generateToken from "../config/token.js"
 import User from "../models/user.model.js"
-import bcrypt from 'bcrypt'
+import bcrypt, { hash } from 'bcrypt'
 
 export const homepage = async(req,res) =>{
     return res.json({message:"This is our Home Page that running on port no 8000"})
 }
+
+export const createAccount = async(req,res) =>{
+    try {
+        const{firstName,lastName, email, passWord, userName} = req.body;
+
+        if(!firstName || !lastName || !email || !passWord || !userName){
+            return res.status(400).json({message:"Please Enter all the detail"})
+        }
+
+        const existingUser = User.findOne({email});
+        if(existingUser){
+            res.status(300).json({message:"Email Already Registered"})
+        }
+
+        const hasspassword = await bcrypt.hash(passWord,8);
+
+        const user = await User.create({
+            firstName,
+            lastName,
+            userName,
+            passWord:hasspassword,
+            email
+        })
+
+       console.log(user)
+        
+    } catch (error) {
+      return res.status(500).json({message:error.message})   
+    }
+}
+
 
 export const signup = async (req,res) => {
     try {
