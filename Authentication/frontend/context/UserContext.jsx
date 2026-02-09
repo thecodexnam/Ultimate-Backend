@@ -4,7 +4,7 @@ import App from '../src/App';
 
 export const dataContext = createContext();
 const UserContext = ({children}) => {
-    const serverUrl = 'http://localhost:8000'
+    const serverUrl = "http://localhost:8000"
     const value = {
         serverUrl
     }
