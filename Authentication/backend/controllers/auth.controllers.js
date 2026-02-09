@@ -2,93 +2,65 @@ import { json } from "express"
 import generateToken from "../config/token.js"
 import User from "../models/user.model.js"
 import bcrypt, { hash } from 'bcrypt'
+import { use } from "react"
 
 export const homepage = async(req,res) =>{
     return res.json({message:"This is our Home Page that running on port no 8000"})
 }
 
-export const createAccount = async(req,res) =>{
+export const signup = async (req, res) => {
     try {
-        const{firstName,lastName, email, passWord, userName} = req.body;
+        const { firstName, lastName, email, passWord, userName } = req.body;
 
-        if(!firstName || !lastName || !email || !passWord || !userName){
-            return res.status(400).json({message:"Please Enter all the detail"})
+        // 1️⃣ Validation
+        if (!firstName || !lastName || !email || !passWord || !userName) {
+            return res.status(400).json({ message: "Please enter all details" });
         }
 
-        const existingUser = User.findOne({email});
-        if(existingUser){
-            res.status(300).json({message:"Email Already Registered"})
+        // 2️⃣ Check existing user
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+            return res.status(409).json({ message: "Email already registered" });
         }
 
-        const hasspassword = await bcrypt.hash(passWord,8);
+        // 3️⃣ Hash password
+        const hashedPassword = await bcrypt.hash(passWord, 8);
 
+        // 4️⃣ Create user
         const user = await User.create({
             firstName,
             lastName,
             userName,
-            passWord:hasspassword,
+            passWord: hashedPassword,
             email
-        })
+        });
 
-       console.log(user)
-        
-    } catch (error) {
-      return res.status(500).json({message:error.message})   
-    }
-}
+        // 5️⃣ Generate token (FIXED)
+        const token = await generateToken(user._id);
 
+        // 6️⃣ Set cookie (FIXED)
+        res.cookie("token", token, {
+            httpOnly: true,
+            sameSite: "strict",
+            secure: process.env.NODE_ENVIRONMENT === "production",
+            maxAge: 10 * 24 * 60 * 60 * 1000
+        });
 
-export const signup = async (req,res) => {
-    try {
-        const{firstName,lastName,email,passWord,userName} = req.body
-
-        if(!firstName || !lastName || !email|| !passWord || !userName){
-            return res.status(400).json({message:"send all details"})
-        }
-
-        let existUser = await User.findOne({email})
-        if(existUser){
-            return res.status(400).json({message:"User already exist"})
-        }
-
-        const hassedPassword = await bcrypt.hash(passWord,10) //-in second parameter we set How many times the password is scrambled
-        //Converts the password into a hashed (unreadable) value
-        const user = await User.create({
-            firstName,
-            lastName,
-            passWord:hassedPassword,
-            userName,
-            email,
-        })
-
-        let token;//Cookie name
-        try {
-            token = generateToken(user._id)
-        } catch (error) {
-            console.log(error)
-        } 
-
-        console.log(user);
-                            // |> The JWT token value
-        res.cookie("token",token,{
-            httpOnly:true, //JavaScript cannot access this cookie Protects from XSS attacks Hackers can’t steal token using document.cookie
-            secure:process.env.NODE_ENVIRONMENT == "production", //Cookie only sent over HTTPS Enabled automatically in production
-            sameSite:"strict", //Prevents cookie from being sent to other websites Protects from CSRF attacks
-            maxAge:7*24*60*60*1000 //Cookie expiry time
-        })
-
-
-        return res.status(201).json({user:{
+        // 7️⃣ Response
+        return res.status(201).json({
+            message: "User created successfully",
             firstName,
             lastName,
             userName,
-            email,
-        }})
-        
+            email
+        });
+
     } catch (error) {
-     return res.status(500).json({message:"Internal server error"})   
+        console.error(error);
+        return res.status(500).json({ message: "Internal server error" });
     }
-}
+};
+
 
 export const login = async(req,res)=>{
     try {
