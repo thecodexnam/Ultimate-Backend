@@ -1,12 +1,39 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import dp from "../assets/dp.jpg"; // Assuming you have an avatar image in the assets folder;
+import { dataContext } from "../../context/UserContext";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const SignUp = () => {
-    let[firstName, setFirstName] = useState(null);
-    let[lastName, setLastName] = useState(null);
-    let[username, setUsername] = useState(null);
-    let[email, setEmail] = useState(null);
-    let[password, setPassword] = useState(null);
+  let navigate = useNavigate()
+  let { serverUrl } = useContext(dataContext);
+  let [firstName, setFirstName] = useState("");
+  let [lastName, setLastName] = useState("");
+  let [userName, setUserName] = useState("");
+  let [email, setEmail] = useState("");
+  let [passWord, setPassWord] = useState("");
+
+  const handleSignUp = async (e) => {
+    e.preventDefault();
+    try {
+      let response = await axios.post(
+        `${serverUrl}/api/signup`,
+        {
+          firstName,
+          lastName,
+          userName,
+          email,
+          passWord,
+        },
+        { withCredentials: true },
+      );
+
+      console.log(response.data);
+
+    } catch (error) {
+      console.log(error.response?.data || error.message);
+    }
+  };
 
   return (
     <div className="w-full min-h-screen bg-gradient-to-br from-black via-gray-900 to-black flex justify-center items-center px-4">
@@ -31,14 +58,16 @@ const SignUp = () => {
 
             {/* Hover overlay */}
             <div className="absolute inset-0 rounded-full bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
-              <span className="text-white text-sm cursor-pointer text-[10px]">Change</span>
+              <span className="text-white text-sm cursor-pointer text-[10px]">
+                Change
+              </span>
             </div>
           </div>
 
           {/* Inputs */}
           <input
             value={firstName}
-            onChange={(e)=>setFirstName(e.target.value)}
+            onChange={(e) => setFirstName(e.target.value)}
             type="text"
             placeholder="First Name"
             className="w-full h-11 px-4 mb-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black/70 transition"
@@ -46,15 +75,15 @@ const SignUp = () => {
 
           <input
             value={lastName}
-            onChange={(e)=>setLastName(e.target.value)}
+            onChange={(e) => setLastName(e.target.value)}
             type="text"
             placeholder="Last Name"
             className="w-full h-11 px-4 mb-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black/70 transition"
           />
 
           <input
-            value={username}
-            onChange={(e)=>setUsername(e.target.value)}
+            value={userName}
+            onChange={(e) => setUserName(e.target.value)}
             type="text"
             placeholder="Username"
             className="w-full h-11 px-4 mb-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black/70 transition"
@@ -62,29 +91,32 @@ const SignUp = () => {
 
           <input
             value={email}
-            onChange={(e)=>setEmail(e.target.value)}
+            onChange={(e) => setEmail(e.target.value)}
             type="email"
             placeholder="Email"
             className="w-full h-11 px-4 mb-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black/70 transition"
           />
 
           <input
-            value={password}
-            onChange={(e)=>setPassword(e.target.value)}
+            value={passWord}
+            onChange={(e) => setPassWord(e.target.value)}
             type="password"
             placeholder="Password"
             className="w-full h-11 px-4 mb-5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black/70 transition"
           />
 
           {/* Button */}
-          <button className="w-full h-11 bg-gradient-to-r from-black to-gray-800 text-white rounded-xl font-semibold tracking-wide hover:scale-[1.02] hover:shadow-xl transition active:scale-95">
+          <button
+            onClick={handleSignUp}
+            className="w-full h-11 bg-gradient-to-r from-black to-gray-800 text-white rounded-xl font-semibold tracking-wide hover:scale-[1.02] hover:shadow-xl transition active:scale-95"
+          >
             Sign Up
           </button>
 
           {/* Footer */}
-          <p className="text-xs text-gray-500 mt-4">
+          <p className="text-xs text-gray-500 mt-4" onClick={()=>navigate("/login")}>
             Already have an account?{" "}
-            <span className="text-black font-semibold cursor-pointer hover:underline">
+            <span className="text-black font-semibold cursor-pointer hover:underline ">
               Login
             </span>
           </p>
