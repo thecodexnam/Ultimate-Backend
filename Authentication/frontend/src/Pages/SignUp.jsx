@@ -1,39 +1,52 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useRef, useState } from "react";
 import dp from "../assets/dp.jpg"; // Assuming you have an avatar image in the assets folder;
 import { dataContext } from "../../context/UserContext";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 const SignUp = () => {
-  let navigate = useNavigate()
+  let navigate = useNavigate();
   let { serverUrl } = useContext(dataContext);
   let [firstName, setFirstName] = useState("");
   let [lastName, setLastName] = useState("");
   let [userName, setUserName] = useState("");
   let [email, setEmail] = useState("");
   let [passWord, setPassWord] = useState("");
+  let file = useRef(null);
 
   const handleSignUp = async (e) => {
     e.preventDefault();
     try {
+      let formData = new FormData()
+      formData.append("firstName",firstName)
+      formData.append("lastName",lastName)
+      formData.append("userName",userName)
+      formData.append("email",email)
+      formData.append("passWord",passWord)
+      if(backendImage){
+        formData.append("profileImage",backendImage)
+      }
       let response = await axios.post(
-        `${serverUrl}/api/signup`,
-        {
-          firstName,
-          lastName,
-          userName,
-          email,
-          passWord,
-        },
-        { withCredentials: true },
+        `${serverUrl}/api/signup`,formData,
+        { withCredentials: true,
+            headers:{"Content-Type":"multipart/form-data"}
+         },
       );
 
       console.log(response.data);
-
     } catch (error) {
       console.log(error.response?.data || error.message);
     }
   };
+
+  let [frontendImage, setFrontendImage] = useState(dp);
+  let [backendImage, setBackendImage] = useState(null);
+  function handleImage(e) {
+    let file = e.target.files[0];
+    setBackendImage(file);
+    let image = URL.createObjectURL(file);
+    setFrontendImage(image);
+  }
 
   return (
     <div className="w-full min-h-screen bg-gradient-to-br from-black via-gray-900 to-black flex justify-center items-center px-4">
@@ -46,25 +59,29 @@ const SignUp = () => {
         </p>
 
         <form className="flex flex-col items-center">
+          <input type="file" hidden ref={file} onChange={handleImage} />
           {/* Avatar */}
           <div className="relative mb-6 group">
             <div className="w-[110px] h-[110px] rounded-full overflow-hidden border-4 border-gray-300 shadow-md">
               <img
-                src={dp}
+                src={frontendImage}
                 alt="profile"
                 className="w-full h-full object-cover"
               />
             </div>
 
             {/* Hover overlay */}
-            <div className="absolute inset-0 rounded-full bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
+            <div
+              className="absolute inset-0 rounded-full bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition"
+              onClick={() => file.current.click()}
+            >
               <span className="text-white text-sm cursor-pointer text-[10px]">
                 Change
               </span>
             </div>
           </div>
 
-          {/* Inputs */}
+          {/* Inputs firstName*/}
           <input
             value={firstName}
             onChange={(e) => setFirstName(e.target.value)}
@@ -73,6 +90,7 @@ const SignUp = () => {
             className="w-full h-11 px-4 mb-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black/70 transition"
           />
 
+            {/* Input LastName */}
           <input
             value={lastName}
             onChange={(e) => setLastName(e.target.value)}
@@ -81,6 +99,7 @@ const SignUp = () => {
             className="w-full h-11 px-4 mb-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black/70 transition"
           />
 
+          {/* Input UserName */}
           <input
             value={userName}
             onChange={(e) => setUserName(e.target.value)}
@@ -89,6 +108,7 @@ const SignUp = () => {
             className="w-full h-11 px-4 mb-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black/70 transition"
           />
 
+          {/* Input Email */}
           <input
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -97,6 +117,7 @@ const SignUp = () => {
             className="w-full h-11 px-4 mb-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black/70 transition"
           />
 
+          {/* input PassWord */}
           <input
             value={passWord}
             onChange={(e) => setPassWord(e.target.value)}
@@ -114,7 +135,10 @@ const SignUp = () => {
           </button>
 
           {/* Footer */}
-          <p className="text-xs text-gray-500 mt-4" onClick={()=>navigate("/login")}>
+          <p
+            className="text-xs text-gray-500 mt-4"
+            onClick={() => navigate("/login")}
+          >
             Already have an account?{" "}
             <span className="text-black font-semibold cursor-pointer hover:underline ">
               Login
