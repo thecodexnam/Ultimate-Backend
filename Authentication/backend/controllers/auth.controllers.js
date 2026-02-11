@@ -3,6 +3,7 @@ import generateToken from "../config/token.js"
 import User from "../models/user.model.js"
 import bcrypt, { hash } from 'bcrypt'
 import { use } from "react"
+import uploadOnCloudinary from "../config/CLOUDINARY.js"
 
 export const homepage = async(req,res) =>{
     return res.json({message:"This is our Home Page that running on port no 8000"})
@@ -11,11 +12,18 @@ export const homepage = async(req,res) =>{
 export const signup = async (req, res) => {
     try {
         const { firstName, lastName, email, passWord, userName } = req.body;
+        console.log(req.body);
+        
 
         // 1️⃣ Validation
         if (!firstName || !lastName || !email || !passWord || !userName) {
             return res.status(400).json({ message: "Please enter all details" });
         }
+
+        let profileImage;
+        if(req.file){
+          profileImage = await uploadOnCloudinary(req.file.path)
+        }       
 
         // 2️⃣ Check existing user
         const existingUser = await User.findOne({ email });
@@ -32,7 +40,8 @@ export const signup = async (req, res) => {
             lastName,
             userName,
             passWord: hashedPassword,
-            email
+            email,
+            profileImage
         });
 
         // 5️⃣ Generate token (FIXED)
@@ -52,7 +61,8 @@ export const signup = async (req, res) => {
             firstName,
             lastName,
             userName,
-            email
+            email,
+            profileImage
         });
 
     } catch (error) {
@@ -105,7 +115,6 @@ export const login = async (req, res) => {
   }
 };
 
-
 export const logout = async(req,res)=>{
     try {
         res.clearCookie("token")
@@ -113,4 +122,20 @@ export const logout = async(req,res)=>{
     } catch (error) {
         return res.status(500).json(error)
     }
+}
+
+export const getUserData = async (req,res)=>{
+  try {
+    let userId = req.userId
+    if(userId){
+      return res.status(400).json({message:"User Id is not Found"})
+    }
+    let user = await User.findById({userId})
+    if(!user){
+      return res.status(400).json({message:"User not Found"})
+    }
+    return res.status(200).json(user)
+  } catch (error) {
+    return res.status(400).json({message:error})
+  }
 }
