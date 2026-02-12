@@ -12,6 +12,8 @@ let port = process.env.PORT || 4000
 
 app.use(express.json())
 
+app.set("trust proxy", 1); // ✅ Required for Render/Vercel (Secure Cookies)
+
 app.use(cors({
     origin: [
         "http://localhost:5173",
