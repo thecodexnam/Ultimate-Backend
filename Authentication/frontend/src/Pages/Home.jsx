@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { dataContext } from '../../context/UserContext';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -6,8 +6,15 @@ import { motion } from 'framer-motion';
 
 const Home = () => {
   // 1️⃣ Access Global State
-  const { userData, setUserData, serverUrl } = useContext(dataContext);
+  const { userData, setUserData, serverUrl, loading } = useContext(dataContext);
   const navigate = useNavigate();
+
+  // If not logged in, go back to login (prevents infinite Loading on deploy)
+  useEffect(() => {
+    if (!loading && !userData) {
+      navigate('/login');
+    }
+  }, [loading, userData, navigate]);
 
   // ============================================
   // HANDLE LOGOUT
@@ -28,10 +35,18 @@ const Home = () => {
   };
 
   // 5️⃣ Loading State (Wait for user data to load)
-  if (!userData) {
+  if (loading) {
     return (
       <div className="min-h-screen flex justify-center items-center bg-black text-white">
         <p>Loading...</p>
+      </div>
+    );
+  }
+
+  if (!userData) {
+    return (
+      <div className="min-h-screen flex justify-center items-center bg-black text-white">
+        <p>Redirecting to login...</p>
       </div>
     );
   }
