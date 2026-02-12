@@ -3,10 +3,12 @@ import dp from "../assets/dp.jpg"; // Assuming you have an avatar image in the a
 import { dataContext } from "../../context/UserContext";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import toast from 'react-hot-toast';
+import { motion } from "framer-motion";
 
 const SignUp = () => {
   let navigate = useNavigate();
-  let { serverUrl } = useContext(dataContext);
+  let { serverUrl, userData, setUserData, getUserData } = useContext(dataContext);
   let [firstName, setFirstName] = useState("");
   let [lastName, setLastName] = useState("");
   let [userName, setUserName] = useState("");
@@ -18,24 +20,29 @@ const SignUp = () => {
     e.preventDefault();
     try {
       let formData = new FormData()
-      formData.append("firstName",firstName)
-      formData.append("lastName",lastName)
-      formData.append("userName",userName)
-      formData.append("email",email)
-      formData.append("passWord",passWord)
-      if(backendImage){
-        formData.append("profileImage",backendImage)
+      formData.append("firstName", firstName)
+      formData.append("lastName", lastName)
+      formData.append("userName", userName)
+      formData.append("email", email)
+      formData.append("passWord", passWord)
+      if (backendImage) {
+        formData.append("profileImage", backendImage)
       }
       let response = await axios.post(
-        `${serverUrl}/api/signup`,formData,
-        { withCredentials: true,
-            headers:{"Content-Type":"multipart/form-data"}
-         },
-      );
+        `${serverUrl}/api/signup`, formData,
+        {
+          withCredentials: true,
+          headers: { "Content-Type": "multipart/form-data" }
+        });
+      await getUserData()
+
+      toast.success("Account Created Successfully!");
+      setTimeout(() => navigate('/home'), 1000);
 
       console.log(response.data);
     } catch (error) {
       console.log(error.response?.data || error.message);
+      toast.error(error.response?.data?.message || "Signup failed");
     }
   };
 
@@ -50,7 +57,12 @@ const SignUp = () => {
 
   return (
     <div className="w-full min-h-screen bg-gradient-to-br from-black via-gray-900 to-black flex justify-center items-center px-4">
-      <div className="w-full max-w-[480px] bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl p-8">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5 }}
+        className="w-full max-w-[480px] bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl p-8"
+      >
         <h1 className="text-4xl font-extrabold text-center text-gray-800 mb-2">
           Create Account
         </h1>
@@ -90,7 +102,7 @@ const SignUp = () => {
             className="w-full h-11 px-4 mb-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black/70 transition"
           />
 
-            {/* Input LastName */}
+          {/* Input LastName */}
           <input
             value={lastName}
             onChange={(e) => setLastName(e.target.value)}
@@ -145,7 +157,7 @@ const SignUp = () => {
             </span>
           </p>
         </form>
-      </div>
+      </motion.div>
     </div>
   );
 };
