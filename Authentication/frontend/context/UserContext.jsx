@@ -1,34 +1,39 @@
-import React, { createContext, useState } from 'react'
-import App from '../src/App';
-import axios from 'axios';
-
+import React, { createContext, useEffect, useState } from "react";
+import axios from "axios";
 
 export const dataContext = createContext();
-const UserContext = ({children}) => {
-    let [userData,setUserData] = useState(null)
-    const serverUrl = "http://localhost:8000"
-    const getUserData = async ()=>{
-        try {
-            let data = await axios.get(`${serverUrl}/api/getuserdata`)
-            
-        } catch (error) {
-            
-        }
+
+const UserContext = ({ children }) => {
+  const [userData, setUserData] = useState(null);
+  const serverUrl = "http://localhost:8000";
+
+  const getUserData = async () => {
+    try {
+      const { data } = await axios.get(
+        `${serverUrl}/api/getuserdata`,
+        { withCredentials: true }
+      );
+      setUserData(data);
+    } catch (error) {
+      if (error.response?.status === 401) {
+        setUserData(null); // user not logged in
+      } else {
+        console.log("Error fetching user:", error);
+      }
     }
+  };
 
-
-    const value = {
-        serverUrl
-    }
-
+  useEffect(() => {
+    getUserData();
+  }, []);
 
   return (
-    <div>
-        <dataContext.Provider value={value}>
-            {children}
-        </dataContext.Provider>
-    </div>
-  )
-}
+    <dataContext.Provider
+      value={{ serverUrl, userData, setUserData, getUserData }}
+    >
+      {children}
+    </dataContext.Provider>
+  );
+};
 
-export default UserContext
+export default UserContext;
