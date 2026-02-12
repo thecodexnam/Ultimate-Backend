@@ -3,10 +3,12 @@ import dp from "../assets/dp.jpg";
 import { dataContext } from "../../context/UserContext";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import toast from 'react-hot-toast';
+import { motion } from "framer-motion";
 
 const Login = () => {
   let navigate = useNavigate()
-  const { serverUrl } = useContext(dataContext);
+  let { serverUrl, userData, setUserData, getUserData } = useContext(dataContext);
   const [email, setEmail] = useState("");
   const [passWord, setPassWord] = useState("");
 
@@ -20,19 +22,27 @@ const Login = () => {
           email,
           passWord,
         },
-        { withCredentials: true }
-      );
+        { withCredentials: true });
+      await getUserData()
+
+      toast.success(response.data.message || "Login Successful!");
+      navigate('/home')
 
       console.log(response.data);
-      // later: set user context / navigate
     } catch (error) {
-      alert(error.response?.data.message || error.message);
+      console.log(error);
+      toast.error(error.response?.data?.message || error.message);
     }
   };
 
   return (
     <div className="w-full min-h-screen bg-gradient-to-br from-black via-gray-900 to-black flex justify-center items-center px-4">
-      <div className="w-full max-w-[420px] bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl p-8">
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="w-full max-w-[420px] bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl p-8"
+      >
         <h1 className="text-4xl font-extrabold text-center text-gray-800 mb-2">
           Welcome Back
         </h1>
@@ -81,12 +91,12 @@ const Login = () => {
           {/* Footer */}
           <p className="text-xs text-gray-500 mt-4">
             Don’t have an account?{" "}
-            <span onClick={()=>navigate("/signup")} className="text-black font-semibold cursor-pointer hover:underline">
+            <span onClick={() => navigate("/signup")} className="text-black font-semibold cursor-pointer hover:underline">
               Sign Up
             </span>
           </p>
         </form>
-      </div>
+      </motion.div>
     </div>
   );
 };
