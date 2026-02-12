@@ -62,11 +62,14 @@ export const signup = async (req, res) => {
     // 7️⃣ Response
     return res.status(201).json({
       message: "User created successfully",
-      firstName,
-      lastName,
-      userName,
-      email,
-      profileImage
+      user: {
+        _id: user._id,
+        firstName,
+        lastName,
+        userName,
+        email,
+        profileImage
+      }
     });
 
   } catch (error) {
@@ -111,6 +114,7 @@ export const login = async (req, res) => {
     return res.status(200).json({
       message: "User logged in successfully",
       user: {
+        _id: existUser._id,
         firstName: existUser.firstName,
         lastName: existUser.lastName,
         userName: existUser.userName,
@@ -151,7 +155,7 @@ export const getUserData = async (req, res) => {
       return res.status(401).json({ message: "User Id not found" });
     }
 
-    const user = await User.findById(userId);
+    const user = await User.findById(userId).select("-passWord");
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });

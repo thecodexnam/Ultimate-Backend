@@ -58,6 +58,9 @@ const SignUp = () => {
           headers: { "Content-Type": "multipart/form-data" } // Tell server we aren't just sending text
         });
 
+      // ✅ Set user immediately from signup response
+      setUserData(response.data?.user || response.data);
+
       // 3️⃣ Update App State: Fetch the new user's data immediately
       await getUserData()
 

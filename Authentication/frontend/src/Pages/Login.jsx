@@ -31,6 +31,11 @@ const Login = () => {
         },
         { withCredentials: true }); // Important: Allows us to receive the 'token' cookie
 
+      // ✅ Set user immediately from login response (works even if cookie fetch is delayed/blocked)
+      if (response.data?.user) {
+        setUserData(response.data.user);
+      }
+
       // 4️⃣ Fetch User Data immediately after successful login
       await getUserData()
 
