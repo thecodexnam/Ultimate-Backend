@@ -1,5 +1,5 @@
 import React, { useContext, useRef, useState } from "react";
-import dp from "../assets/dp.jpg"; // Assuming you have an avatar image in the assets folder;
+import dp from "../assets/dp.jpg"; // Default avatar image
 import { dataContext } from "../../context/UserContext";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -7,18 +7,39 @@ import toast from 'react-hot-toast';
 import { motion } from "framer-motion";
 
 const SignUp = () => {
-  let navigate = useNavigate();
+  let navigate = useNavigate(); // Hook to navigate between pages
+  // Access global state (user data and server URL)
   let { serverUrl, userData, setUserData, getUserData } = useContext(dataContext);
+
+  // Local state for form fields
   let [firstName, setFirstName] = useState("");
   let [lastName, setLastName] = useState("");
   let [userName, setUserName] = useState("");
   let [email, setEmail] = useState("");
   let [passWord, setPassWord] = useState("");
+
+  // Ref to trigger file input click
   let file = useRef(null);
 
+  // States for Image Preview
+  let [frontendImage, setFrontendImage] = useState(dp); // Shows default or selected image
+  let [backendImage, setBackendImage] = useState(null); // Stores the actual file to send to backend
+
+  // Function to handle image selection
+  function handleImage(e) {
+    let file = e.target.files[0];
+    setBackendImage(file);
+    let image = URL.createObjectURL(file); // Create a temporary URL for preview
+    setFrontendImage(image);
+  }
+
+  // ============================================
+  // HANDLE SIGNUP
+  // ============================================
   const handleSignUp = async (e) => {
-    e.preventDefault();
+    e.preventDefault(); // Prevent page reload
     try {
+      // 1️⃣ Prepare Data: We use FormData because we are sending a FILE (image)
       let formData = new FormData()
       formData.append("firstName", firstName)
       formData.append("lastName", lastName)
@@ -28,16 +49,21 @@ const SignUp = () => {
       if (backendImage) {
         formData.append("profileImage", backendImage)
       }
+
+      // 2️⃣ Send Data to Backend
       let response = await axios.post(
         `${serverUrl}/api/signup`, formData,
         {
-          withCredentials: true,
-          headers: { "Content-Type": "multipart/form-data" }
+          withCredentials: true, // IMPORTANT: Allows cookies (token) to be received
+          headers: { "Content-Type": "multipart/form-data" } // Tell server we aren't just sending text
         });
+
+      // 3️⃣ Update App State: Fetch the new user's data immediately
       await getUserData()
 
+      // 4️⃣ Success Feedback
       toast.success("Account Created Successfully!");
-      setTimeout(() => navigate('/home'), 1000);
+      setTimeout(() => navigate('/home'), 1000); // Redirect to Home after 1s
 
       console.log(response.data);
     } catch (error) {
@@ -46,17 +72,9 @@ const SignUp = () => {
     }
   };
 
-  let [frontendImage, setFrontendImage] = useState(dp);
-  let [backendImage, setBackendImage] = useState(null);
-  function handleImage(e) {
-    let file = e.target.files[0];
-    setBackendImage(file);
-    let image = URL.createObjectURL(file);
-    setFrontendImage(image);
-  }
-
   return (
     <div className="w-full min-h-screen bg-gradient-to-br from-black via-gray-900 to-black flex justify-center items-center px-4">
+      {/* Animation Wrapper */}
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
@@ -71,8 +89,10 @@ const SignUp = () => {
         </p>
 
         <form className="flex flex-col items-center">
+          {/* Hidden File Input */}
           <input type="file" hidden ref={file} onChange={handleImage} />
-          {/* Avatar */}
+
+          {/* Avatar Section */}
           <div className="relative mb-6 group">
             <div className="w-[110px] h-[110px] rounded-full overflow-hidden border-4 border-gray-300 shadow-md">
               <img
@@ -82,10 +102,10 @@ const SignUp = () => {
               />
             </div>
 
-            {/* Hover overlay */}
+            {/* Hover Effect to Change Image */}
             <div
               className="absolute inset-0 rounded-full bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition"
-              onClick={() => file.current.click()}
+              onClick={() => file.current.click()} // Triggers the hidden file input
             >
               <span className="text-white text-sm cursor-pointer text-[10px]">
                 Change
@@ -93,7 +113,7 @@ const SignUp = () => {
             </div>
           </div>
 
-          {/* Inputs firstName*/}
+          {/* Form Inputs */}
           <input
             value={firstName}
             onChange={(e) => setFirstName(e.target.value)}
@@ -102,7 +122,6 @@ const SignUp = () => {
             className="w-full h-11 px-4 mb-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black/70 transition"
           />
 
-          {/* Input LastName */}
           <input
             value={lastName}
             onChange={(e) => setLastName(e.target.value)}
@@ -111,7 +130,6 @@ const SignUp = () => {
             className="w-full h-11 px-4 mb-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black/70 transition"
           />
 
-          {/* Input UserName */}
           <input
             value={userName}
             onChange={(e) => setUserName(e.target.value)}
@@ -120,7 +138,6 @@ const SignUp = () => {
             className="w-full h-11 px-4 mb-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black/70 transition"
           />
 
-          {/* Input Email */}
           <input
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -129,7 +146,6 @@ const SignUp = () => {
             className="w-full h-11 px-4 mb-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black/70 transition"
           />
 
-          {/* input PassWord */}
           <input
             value={passWord}
             onChange={(e) => setPassWord(e.target.value)}
@@ -138,7 +154,7 @@ const SignUp = () => {
             className="w-full h-11 px-4 mb-5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black/70 transition"
           />
 
-          {/* Button */}
+          {/* Signup Button */}
           <button
             onClick={handleSignUp}
             className="w-full h-11 bg-gradient-to-r from-black to-gray-800 text-white rounded-xl font-semibold tracking-wide hover:scale-[1.02] hover:shadow-xl transition active:scale-95"
@@ -146,7 +162,7 @@ const SignUp = () => {
             Sign Up
           </button>
 
-          {/* Footer */}
+          {/* Login Link */}
           <p
             className="text-xs text-gray-500 mt-4"
             onClick={() => navigate("/login")}

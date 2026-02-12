@@ -5,19 +5,29 @@ import axios from 'axios';
 import { motion } from 'framer-motion';
 
 const Home = () => {
+  // 1️⃣ Access Global State
   const { userData, setUserData, serverUrl } = useContext(dataContext);
   const navigate = useNavigate();
 
+  // ============================================
+  // HANDLE LOGOUT
+  // ============================================
   const handleLogout = async () => {
     try {
+      // 2️⃣ Call Logout API
       await axios.post(`${serverUrl}/api/logout`, {}, { withCredentials: true });
+
+      // 3️⃣ Clear User Data in Frontend
       setUserData(null);
+
+      // 4️⃣ Redirect to Login
       navigate('/login');
     } catch (error) {
       console.error("Logout failed:", error);
     }
   };
 
+  // 5️⃣ Loading State (Wait for user data to load)
   if (!userData) {
     return (
       <div className="min-h-screen flex justify-center items-center bg-black text-white">
@@ -41,13 +51,16 @@ const Home = () => {
 
       {/* Content */}
       <div className="flex flex-col items-center justify-center pt-20 px-4">
+        {/* Animated Card */}
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ type: "spring", stiffness: 100, damping: 20 }}
           className="bg-gray-900/50 border border-gray-800 p-10 rounded-3xl shadow-2xl backdrop-blur-xl w-full max-w-lg text-center"
         >
+          {/* Profile Image Section */}
           <div className="w-24 h-24 mx-auto bg-gradient-to-tr from-purple-500 to-blue-500 rounded-full flex items-center justify-center text-4xl font-bold mb-6 overflow-hidden border-4 border-gray-800 shadow-lg">
+            {/* Conditional Rendering: Show Image if exists, else Show Initial */}
             {userData.profileImage ? (
               <img
                 src={userData.profileImage}
@@ -55,6 +68,7 @@ const Home = () => {
                 className="w-full h-full object-cover"
               />
             ) : (
+              // Optional chaining (?.) prevents crash if firstName is undefined
               userData.firstName?.[0]?.toUpperCase()
             )}
           </div>
