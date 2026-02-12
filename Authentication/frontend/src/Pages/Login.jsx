@@ -8,23 +8,33 @@ import { motion } from "framer-motion";
 
 const Login = () => {
   let navigate = useNavigate()
+  // 1️⃣ Access Global State
   let { serverUrl, userData, setUserData, getUserData } = useContext(dataContext);
+
+  // 2️⃣ Local State for Inputs
   const [email, setEmail] = useState("");
   const [passWord, setPassWord] = useState("");
 
+  // ============================================
+  // HANDLE LOGIN
+  // ============================================
   const handleLogin = async (e) => {
     e.preventDefault();
 
     try {
+      // 3️⃣ Send Login Credentials to Backend
       const response = await axios.post(
         `${serverUrl}/api/login`,
         {
           email,
           passWord,
         },
-        { withCredentials: true });
+        { withCredentials: true }); // Important: Allows us to receive the 'token' cookie
+
+      // 4️⃣ Fetch User Data immediately after successful login
       await getUserData()
 
+      // 5️⃣ Success Message & Redirect
       toast.success(response.data.message || "Login Successful!");
       navigate('/home')
 
@@ -51,18 +61,8 @@ const Login = () => {
         </p>
 
         <form className="flex flex-col items-center">
-          {/* Avatar */}
-          {/* <div className="relative mb-6">
-            <div className="w-[100px] h-[100px] rounded-full overflow-hidden border-4 border-gray-300 shadow-md">
-              <img
-                src={dp}
-                alt="profile"
-                className="w-full h-full object-cover"
-              />
-            </div>
-          </div> */}
 
-          {/* Email */}
+          {/* Email Input */}
           <input
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -71,7 +71,7 @@ const Login = () => {
             className="w-full h-11 px-4 mb-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black/70 transition"
           />
 
-          {/* Password */}
+          {/* Password Input */}
           <input
             value={passWord}
             onChange={(e) => setPassWord(e.target.value)}
@@ -80,7 +80,7 @@ const Login = () => {
             className="w-full h-11 px-4 mb-5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black/70 transition"
           />
 
-          {/* Button */}
+          {/* Login Button */}
           <button
             onClick={handleLogin}
             className="w-full h-11 bg-gradient-to-r from-black to-gray-800 text-white rounded-xl font-semibold tracking-wide hover:scale-[1.02] hover:shadow-xl transition active:scale-95"
@@ -88,7 +88,7 @@ const Login = () => {
             Login
           </button>
 
-          {/* Footer */}
+          {/* Sign Up Link */}
           <p className="text-xs text-gray-500 mt-4">
             Don’t have an account?{" "}
             <span onClick={() => navigate("/signup")} className="text-black font-semibold cursor-pointer hover:underline">

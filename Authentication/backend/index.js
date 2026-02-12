@@ -13,7 +13,10 @@ let port = process.env.PORT || 4000
 app.use(express.json())
 
 app.use(cors({
-    origin: "http://localhost:5173",
+    origin: [
+        "http://localhost:5173",
+        process.env.FRONTEND_URL // Allow production frontend
+    ],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"]
