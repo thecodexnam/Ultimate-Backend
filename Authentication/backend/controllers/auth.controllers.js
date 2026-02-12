@@ -50,8 +50,8 @@ export const signup = async (req, res) => {
     // 6️⃣ Set cookie (FIXED)
     res.cookie("token", token, {
       httpOnly: true,
-      sameSite: "lax",
       secure: process.env.NODE_ENVIRONMENT === "production",
+      sameSite: process.env.NODE_ENVIRONMENT === "production" ? "none" : "lax",
       maxAge: 10 * 24 * 60 * 60 * 1000
     });
 
@@ -94,7 +94,7 @@ export const login = async (req, res) => {
     res.cookie("token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENVIRONMENT === "production",
-      sameSite: "lax",
+      sameSite: process.env.NODE_ENVIRONMENT === "production" ? "none" : "lax",
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
@@ -118,7 +118,11 @@ export const login = async (req, res) => {
 
 export const logout = async (req, res) => {
   try {
-    res.clearCookie("token")
+    res.clearCookie("token", {
+      httpOnly: true,
+      secure: process.env.NODE_ENVIRONMENT === "production",
+      sameSite: process.env.NODE_ENVIRONMENT === "production" ? "none" : "lax",
+    });
     return res.status(200).json({ message: "Logout Successfully" })
   } catch (error) {
     return res.status(500).json(error)
