@@ -1,119 +1,207 @@
-# MERN Authentication System 🔐
+# **MERN Authentication System 🔐**
 
-A robust and beautiful Authentication System built with the **MERN Stack** (MongoDB, Express, React, Node.js).
-This project features secure Signup, Login, persistent sessions using Cookies, and a polished UI with animations.
+A robust and beautiful Authentication System built with the **MERN Stack** (MongoDB, Express, React, Node.js). This project features secure Signup, Login, persistent sessions using Cookies, and a polished UI with animations.
 
-## 🌟 Features
+## **🌐 Live Demo**
 
-*   **Secure Authentication**:
-    *   Signup & Login with Password Hashing (bcrypt).
-    *   JWT (JSON Web Token) implementation.
-    *   **HttpOnly Cookies** for secure session management.
-*   **Modern UI/UX**:
-    *   Built with **React** & **Tailwind CSS**.
-    *   Smooth animations using **Framer Motion**.
-    *   Toast notifications for user feedback (`react-hot-toast`).
-*   **Image Handling**:
-    *   Profile image upload support (Cloudinary).
-    *   Dynamic profile avatars (Image or Initials).
-*   **Educational Code**:
-    *   The codebase is heavily commented to help beginners understand the flow.
+- **Frontend (Vercel)**: [https://authapp-murex.vercel.app](https://authapp-murex.vercel.app)
+- **Backend (Render)**: [https://ultimate-backend-gtx9.onrender.com](https://ultimate-backend-gtx9.onrender.com)
+- **GitHub Repo**: [https://github.com/thecodexnam/Ultimate-Backend](https://github.com/thecodexnam/Ultimate-Backend)
 
-## 🛠️ Tech Stack
+---
 
-**Frontend:**
-*   React (Vite)
-*   Tailwind CSS (Styling)
-*   Axios (API Requests)
-*   Framer Motion (Animations)
-*   React Router DOM (Navigation)
+## **🌟 Features**
 
-**Backend:**
-*   Node.js & Express.js
-*   MongoDB (Database) & Mongoose
-*   JWT (Authentication)
-*   Bcrypt (Security)
-*   Cloudinary (Image Storage)
+### **Secure Authentication**
+- Signup & Login with password hashing (**bcrypt**)
+- **JWT** (JSON Web Token) based authentication
+- **HttpOnly Cookies** for secure session management
 
-## 🚀 Getting Started
+### **Modern UI/UX**
+- Built with **React (Vite)** & **Tailwind CSS**
+- Smooth animations using **Framer Motion**
+- Toast notifications for user feedback (`react-hot-toast`)
 
-Follow these steps to run the project locally.
+### **Image Handling**
+- Profile image upload support (**Cloudinary**)
+- Dynamic profile avatars (Profile Image or Initials)
 
-### Prerequisites
-*   Node.js installed.
-*   MongoDB installed or a MongoDB Atlas connection string.
-*   Cloudinary Account (for image uploads).
+### **Educational Code**
+- Clean, commented code to help beginners understand the flow
 
-### 1. Clone the Repository
+---
+
+## **🛠️ Tech Stack**
+
+### **Frontend**
+- React (Vite)
+- Tailwind CSS
+- Axios
+- Framer Motion
+- React Router DOM
+- React Hot Toast
+
+### **Backend**
+- Node.js & Express.js
+- MongoDB & Mongoose
+- JWT
+- Bcrypt
+- Cloudinary
+
+---
+
+## **🚀 Getting Started (Local)**
+
+### **Prerequisites**
+- Node.js installed
+- MongoDB (local or Atlas)
+- Cloudinary account (for profile image uploads)
+
+### **1️⃣ Clone the Repository**
+
 ```bash
-git clone <your-repo-url>
-cd Authentication
+git clone https://github.com/thecodexnam/Ultimate-Backend.git
+cd Ultimate-Backend/Authentication
 ```
 
-### 2. Backend Setup
-Navigate to the `backend` folder and install dependencies.
+### **2️⃣ Backend Setup**
+
+Go to the backend folder and install dependencies:
+
 ```bash
 cd backend
 npm install
 ```
 
-Create a `.env` file in the `backend` folder with the following variables:
+Create a `.env` file inside `backend`:
+
 ```env
 PORT=8000
 MONGODB_URL=your_mongodb_connection_string
 JWT_SECRET=your_super_secret_key
-NODE_ENVIRONMENT=development
+NODE_ENV=development
 CLOUDINARY_CLOUD_NAME=your_cloud_name
 CLOUDINARY_API_KEY=your_api_key
 CLOUDINARY_API_SECRET=your_api_secret
 ```
 
-Start the Backend Server:
+Run the backend:
+
 ```bash
 npm run dev
 ```
 
-### 3. Frontend Setup
-Open a new terminal, navigate to the `frontend` folder, and install dependencies.
+Backend will run on: `http://localhost:8000`
+
+### **3️⃣ Frontend Setup**
+
+Open a new terminal, go to the frontend folder, and install dependencies:
+
 ```bash
-cd frontend
+cd ../frontend
 npm install
 ```
 
-Start the Frontend Server:
+For local development, create a `.env` file in `frontend` (optional but recommended):
+
+```env
+VITE_SERVER_URL=http://localhost:8000
+```
+
+Run the frontend:
+
 ```bash
 npm run dev
 ```
 
-Open `http://localhost:5173` in your browser.
+Frontend will run on: `http://localhost:5173`
 
-## 📂 Project Structure
+---
+
+## **🌍 Deployment (Vercel + Render)**
+
+### **Vercel (Frontend)**
+
+Set this environment variable in your Vercel project:
+
+```env
+VITE_SERVER_URL=https://ultimate-backend-gtx9.onrender.com
+```
+
+Then redeploy the frontend.
+
+### **Render (Backend)**
+
+Set these environment variables in your Render service:
+
+```env
+FRONTEND_URL=https://authapp-murex.vercel.app
+NODE_ENV=production
+MONGODB_URL=your_mongodb_connection_string
+JWT_SECRET=your_super_secret_key
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
+```
+
+Then redeploy the backend.
+
+> **Note**: With this setup, login/signup on the live site correctly redirects to the Home page and keeps you authenticated.
+
+---
+
+## **📂 Project Structure**
 
 ```
 Authentication/
-├── backend/            # Express Server
-│   ├── config/         # Database & Token config
-│   ├── controllers/    # API Logic (Signup, Login)
-│   ├── middlewares/    # Auth Checks & File Uploads
-│   ├── models/         # Database Schemas
-│   └── routes/         # API Endpoints
+├── backend/              # Express Server
+│   ├── config/           # DB, token & cloud config
+│   ├── controllers/      # API logic (Signup, Login, Logout, Get User)
+│   ├── middleWares/      # Auth checks, file uploads
+│   ├── models/           # Mongoose schemas
+│   └── routes/           # API routes
 │
-└── frontend/           # React Application
-    ├── public/         # Static assets
+└── frontend/             # React Application
+    ├── public/           # Static assets
     └── src/
-        ├── assets/     # Images
-        ├── context/    # Global State (UserContext)
-        ├── Pages/      # Login, Signup, Home
-        └── App.jsx     # Routing
+        ├── assets/       # Images (e.g., default avatar)
+        ├── context/      # Global state (UserContext)
+        ├── Pages/        # Login, Signup, Home pages
+        └── App.jsx       # Routes definition
 ```
 
-## 🔒 Security Highlights
-- **HttpOnly Cookies**: Prevents XSS attacks by hiding tokens from JavaScript.
-- **Bcrypt**: Ensures passwords are never stored as plain text.
-- **Cors Config**: Restricts API access to trusted domains.
+---
 
-## 🤝 Contributing
-Feel free to fork this project and submit pull requests!
+## **🔒 Security Highlights**
+
+- **HttpOnly Cookies**: Tokens are not accessible via JavaScript, helping prevent XSS
+- **Bcrypt**: Passwords are hashed before saving to the database
+- **CORS Config**: Backend only accepts requests from trusted origins (localhost + deployed frontend)
 
 ---
-Made with ❤️ by Naman
+
+## **🤝 Contributing**
+
+Feel free to fork the project, open issues, or submit pull requests.
+
+---
+
+## **📝 License**
+
+This project is open source and available under the [MIT License](LICENSE).
+
+---
+
+**Made with ❤️ by Naman**
+
+---
+
+## **📧 Contact**
+
+For any questions or suggestions, feel free to reach out!
+
+- GitHub: [@thecodexnam](https://github.com/thecodexnam)
+
+---
+
+You can copy this formatted README directly and use it in your GitHub repository. The structure includes all the essential sections with proper markdown formatting, emojis, and clear organization!
