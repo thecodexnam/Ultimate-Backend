@@ -13,8 +13,6 @@ export const signup = async (req, res) => {
   try {
     const { firstName, lastName, email, passWord, userName } = req.body;
 
-
-
     // 1️⃣ Validation
     if (!firstName || !lastName || !email || !passWord || !userName) {
       return res.status(400).json({ message: "Please enter all details" });
