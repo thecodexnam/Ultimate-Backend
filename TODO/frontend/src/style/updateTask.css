@@ -1,0 +1,91 @@
+/* Page Background */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Segoe UI", sans-serif;
+  background: linear-gradient(135deg, #0f172a, #1e293b);
+}
+
+/* Main Container */
+.container {
+  width: 90%;
+  max-width: 500px;
+  margin: 80px auto;
+  padding: 40px;
+  background: #1e293b;
+  border-radius: 16px;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Heading */
+.container h1 {
+  text-align: center;
+  color: #f8fafc;
+  margin-bottom: 30px;
+  font-weight: 600;
+}
+
+/* Labels */
+.container label {
+  color: #cbd5e1;
+  font-size: 14px;
+  margin-bottom: 6px;
+  margin-top: 15px;
+}
+
+/* Input + Textarea */
+.container input,
+.container textarea {
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 1px solid #334155;
+  background: #0f172a;
+  color: #f8fafc;
+  font-size: 14px;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+/* Focus Effect */
+.container input:focus,
+.container textarea:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.3);
+}
+
+/* Textarea */
+.container textarea {
+  resize: none;
+  min-height: 100px;
+}
+
+/* Button */
+.submit {
+  margin-top: 25px;
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  background: #2563eb;
+  color: white;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+/* Button Hover */
+.submit:hover {
+  background: #1e40af;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.4);
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .container {
+    padding: 25px;
+    margin: 40px auto;
+  }
+}
