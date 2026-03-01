@@ -5,12 +5,17 @@ import cors from "cors";
 import Task, { User } from "./schema.js";
 import jwt from "jsonwebtoken";
 import { use } from "react";
+import cookieParser from "cookie-parser";
 
 const app = express();
 const port = 4000;
 
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+  origin: "http://localhost:5173", // frontend URL
+  credentials: true, // allow cookies
+}));
+app.use(cookieParser());
 
 /*------------------ SIGNUP ROUTE ------------------ */
 
@@ -152,7 +157,7 @@ app.post("/add-task", async (req, res) => {
 app.get("/tasks", async (req, res) => {
   try {
     const tasks = await Task.find();
-
+    console.log("cookies:", req.cookies['token']); // Log incoming cookies for debugging
     return res.status(200).json({
       message: "Tasks fetched successfully",
       tasks,
@@ -165,6 +170,25 @@ app.get("/tasks", async (req, res) => {
     });
   }
 });
+
+/* ------------------ VERIFY JWT TOKEN ------------------ */
+
+function verifyJWTToken(req, res, next) {
+  console.log("verifyJWTTOKen",req.cookies['token']);
+  const token = req.cookies['token']; // Get token from cookies
+  jwt.verify(token, "your_jwt_secret_key", (err, decoded) => {
+    if (err) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized: Invalid token",
+      });
+    }
+    req.user = decoded; // Attach decoded user info to request
+    console.log("Decoded JWT Payload:", decoded);
+  });
+
+  next();
+}
 
 /* ------------------ GET SINGLE TASK ------------------ */
 app.get("/task/:id", async (req, res) => {
