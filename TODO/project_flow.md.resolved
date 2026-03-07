@@ -1,0 +1,82 @@
+# Application Architecture & Data Flow
+
+This document explains how your Full-Stack Task Management application works after our recent security and architectural upgrades!
+
+## High-Level Flow 
+At a very high level, your application is broken into two separate parts that talk to each other:
+1. **The Frontend (React + Vite)**: This is what the user sees in the browser. It runs on `http://localhost:5173`.
+2. **The Backend (Node + Express)**: This is the hidden server that processes logic and talks to the database. It runs on `http://localhost:4000`.
+
+When you do anything on the frontend (like clicking "Login" or "Add Task"), it sends an "HTTP Request" to the backend.
+
+---
+
+## 1. Authentication (Login) Flow
+When a user tries to log in, here is the exact step-by-step process of what happens:
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant Frontend
+    participant Backend (authController)
+    participant Database (MongoDB)
+
+    User->>Frontend: Types Email & Password and clicks "Login"
+    Frontend->>Backend (authController): POST /api/auth/login {email, password}
+    Backend (authController)->>Database (MongoDB): "Does this email exist?"
+    Database (MongoDB)-->>Backend (authController): Returns User Data (including Hashed Password)
+    
+    Note over Backend (authController): Backend uses "bcrypt" to compare the typed password against the hashed password.
+    
+    Backend (authController)->>Backend (authController): Generates a secure "JWT Token"
+    Backend (authController)-->>Frontend: Returns Success! (AND sets an HTTPOnly Cookie with the token)
+    
+    Frontend->>Frontend: Updates localStorage with "user" email.
+    Frontend->>Frontend: Triggers `<ProtectedRoute>` to allow access to the Dashboard!
+```
+
+---
+
+## 2. Protected Route & Data Flow (Viewing Tasks)
+Now that the user is logged in, their browser holds a secret "Cookie" containing their JWT token. When they try to view their tasks, here is what happens:
+
+```mermaid
+sequenceDiagram
+    participant Frontend
+    participant Backend (authMiddleware)
+    participant Backend (taskController)
+    participant Database (MongoDB)
+
+    Frontend->>Frontend: `<ProtectedRoute>` says "Yes, user is mapped in localStorage, show the Dashboard!"
+    Frontend->>Backend (authMiddleware): GET /api/tasks (Automatically includes Cookie)
+    
+    Note over Backend (authMiddleware): The authMiddleware intercepts the request!
+    
+    Backend (authMiddleware)->>Backend (authMiddleware): "Is this Cookie valid? Yes? Extract the User ID!"
+    Backend (authMiddleware)->>Backend (taskController): Forwards request + User ID to the Task Controller.
+    
+    Backend (taskController)->>Database (MongoDB): "Find all tasks where userId == this specifically logged in user"
+    Database (MongoDB)-->>Backend (taskController): Returns ONLY that user's tasks.
+    Backend (taskController)-->>Frontend: Returns JSON array of Tasks.
+    
+    Frontend->>Frontend: React maps through the array and displays them on the screen!
+```
+
+---
+
+## The New Backend "MVC" Structure Explained
+To keep your backend organized as it grows, we structured it into specific folders. Here is what each one does:
+
+* **`models/`**: Defines the "Shape" of your data.
+  * *Example:* [User.js](file:///c:/Users/naman/OneDrive/Desktop/Ultimate%20Backend/TODO/backend/models/User.js) says every user *must* have a Name, Email, and Password.
+* **`controllers/`**: The actual "brains" or logic of the application. 
+  * *Example:* [taskController.js](file:///c:/Users/naman/OneDrive/Desktop/Ultimate%20Backend/TODO/backend/controllers/taskController.js) contains the exact functions that add, delete, or fetch tasks.
+* **`routes/`**: The "Traffic Cops". 
+  * *Example:* [taskRoutes.js](file:///c:/Users/naman/OneDrive/Desktop/Ultimate%20Backend/TODO/backend/routes/taskRoutes.js) listens for URLs like `/api/tasks` and says "Hey `taskController`, handle this!"
+* **`middleware/`**: The "Security Bouncers". 
+  * *Example:* [authMiddleware.js](file:///c:/Users/naman/OneDrive/Desktop/Ultimate%20Backend/TODO/backend/middleware/authMiddleware.js) stands in front of the routes and blocks anyone without a valid JWT token cookie.
+* **`config/`**: Holds configuration strings.
+  * *Example:* [db.js](file:///C:/Users/naman/OneDrive/Desktop/Ultimate%20Backend/TODO/backend/clear_db.js) holds the string that connects to MongoDB. 
+
+### Why is this better?
+Before, all 300+ lines of code were stuffed into [index.js](file:///c:/Users/naman/OneDrive/Desktop/Ultimate%20Backend/TODO/backend/index.js). It was very hard to read. Now, if you want to fix a bug with adding a task, you know exactly where to look: [controllers/taskController.js](file:///c:/Users/naman/OneDrive/Desktop/Ultimate%20Backend/TODO/backend/controllers/taskController.js). If you want to change the database connection, you look in [config/db.js](file:///c:/Users/naman/OneDrive/Desktop/Ultimate%20Backend/TODO/backend/config/db.js). 
