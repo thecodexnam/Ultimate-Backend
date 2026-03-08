@@ -16,18 +16,18 @@ const Signup = () => {
     console.log("Signup Data:", userData);
 
     try {
-      const response = await fetch("http://localhost:4000/signup", {
+      const response = await fetch("http://localhost:4000/api/auth/signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(userData),
+        credentials: "include",
       });
 
       const result = await response.json();
 
       if (response.ok) {
-        document.cookie = `token=${result.token}`;   
         console.log("Signup Successful ✅", result);
         navigate("/login"); // redirect after signup
 
@@ -87,7 +87,7 @@ const Signup = () => {
             required
           />
         </div>
-        
+
         <Link to="/login" className="login-link">Already have an account? Login</Link>
         <button onClick={handleSignup} type="submit" className="submit-btn">
           Sign Up

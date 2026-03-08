@@ -89,3 +89,169 @@ body {
     margin: 40px auto;
   }
 }
+
+/* Subtasks Section */
+.subtasks-section {
+  margin-top: 35px;
+  padding-top: 20px;
+  border-top: 1px solid #334155;
+}
+
+.subtasks-section h3 {
+  color: #f8fafc;
+  font-size: 16px;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ai-btn {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px dashed #2563eb;
+  background: rgba(37, 99, 235, 0.1);
+  color: #60a5fa;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+
+.ai-btn:hover:not(:disabled) {
+  background: rgba(37, 99, 235, 0.2);
+  border-color: #3b82f6;
+  color: #93c5fd;
+}
+
+.ai-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.subtasks-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.subtasks-list li {
+  background: #0f172a;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #334155;
+  transition: all 0.2s ease;
+}
+
+.subtasks-list li.completed {
+  opacity: 0.6;
+}
+
+.subtasks-list li.completed span {
+  text-decoration: line-through;
+  color: #94a3b8;
+}
+
+.subtask-label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 !important;
+  cursor: pointer;
+  color: #e2e8f0 !important;
+}
+
+.subtask-label input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: #2563eb;
+  cursor: pointer;
+  margin: 0;
+  padding: 0;
+}
+
+/* Advice Section */
+.advice-section {
+  margin-top: 25px;
+  padding-top: 20px;
+  border-top: 1px solid #334155;
+}
+
+.advice-section h3 {
+  color: #f8fafc;
+  font-size: 16px;
+  margin-bottom: 15px;
+}
+
+.advice-box {
+  background: #fef9c3;
+  color: #854d0e;
+  padding: 20px;
+  border-radius: 12px;
+  position: relative;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  border-left: 5px solid #eab308;
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.advice-tip {
+  font-size: 14px;
+  margin-bottom: 10px;
+  line-height: 1.5;
+}
+
+.advice-action {
+  font-size: 15px;
+  font-weight: 600;
+  background: rgba(234, 179, 8, 0.1);
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px dashed rgba(234, 179, 8, 0.3);
+}
+
+.clear-advice {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  background: none;
+  border: none;
+  color: #a16207;
+  font-size: 12px;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.clear-advice:hover {
+  color: #854d0e;
+}
+
+.advice-btn {
+  border-color: #eab308;
+  background: rgba(234, 179, 8, 0.1);
+  color: #fde047;
+}
+
+.advice-btn:hover:not(:disabled) {
+  background: rgba(234, 179, 8, 0.2);
+  border-color: #facc15;
+  color: #fef9c3;
+}

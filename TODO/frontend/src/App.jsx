@@ -7,17 +7,31 @@ import UpdateTask from './component/UpdateTask'
 import Login from './component/Login'
 import Signup from './component/SignUp'
 
+import ProtectedRoute from './component/ProtectedRoute'
+
 const App = () => {
   return (
     <>
-      <NavBar/>
-    <Routes>
-      <Route path='/' element={<TaskList/>}/>
-      <Route path='/add' element={<AddTask/>}/>
-      <Route path='/login' element={<Login/>}/>
-      <Route path='/signup' element={<Signup/>}/>
-      <Route path='/update/:id' element={<UpdateTask/>}/>
-    </Routes>
+      <NavBar />
+      <Routes>
+        <Route path='/' element={
+          <ProtectedRoute>
+            <TaskList />
+          </ProtectedRoute>
+        } />
+        <Route path='/add' element={
+          <ProtectedRoute>
+            <AddTask />
+          </ProtectedRoute>
+        } />
+        <Route path='/update/:id' element={
+          <ProtectedRoute>
+            <UpdateTask />
+          </ProtectedRoute>
+        } />
+        <Route path='/login' element={<Login />} />
+        <Route path='/signup' element={<Signup />} />
+      </Routes>
     </>
   )
 }
