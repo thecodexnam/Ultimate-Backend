@@ -12,7 +12,7 @@ const TaskList = () => {
 
   const getListData = async () => {
     try {
-      const response = await fetch("http://localhost:4000/api/tasks", {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/tasks`, {
         credentials: 'include' // include cookies for auth
       });
       const list = await response.json();
@@ -34,7 +34,7 @@ const TaskList = () => {
 
   const deleteTask = async (id) => {
     try {
-      const response = await fetch(`http://localhost:4000/api/tasks/${id}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/tasks/${id}`, {
         method: "DELETE",
         credentials: "include",
       });
@@ -82,7 +82,7 @@ const TaskList = () => {
     }
     console.log(selectedTasks);
     try {
-      const response = await fetch(`http://localhost:4000/api/delete-multiple`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/delete-multiple`, {
         method: "DELETE",
         body: JSON.stringify({ id: selectedTasks }),
         headers: {
@@ -102,6 +102,22 @@ const TaskList = () => {
     }
   }
 
+  const toggleComplete = async (id, currentStatus) => {
+    const newStatus = currentStatus === "Completed" ? "Pending" : "Completed";
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/task/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: newStatus, completedAt: newStatus === "Completed" ? new Date() : null }),
+        credentials: "include",
+      });
+      if (response.ok) {
+        setTaskData((prev) => prev.map((task) => task._id === id ? { ...task, status: newStatus } : task));
+      }
+    } catch (error) {
+      console.error("Error updating status:", error);
+    }
+  };
 
   return (
     <div className="task-container">
@@ -122,7 +138,7 @@ const TaskList = () => {
               </th>
               <th>S.no</th>
               <th>Title</th>
-              <th>Description</th>
+              <th>Status</th>
               <th>Category</th>
               <th>Priority</th>
               <th>Date</th>
@@ -132,7 +148,7 @@ const TaskList = () => {
 
           <tbody>
             {taskData.map((item, index) => (
-              <tr key={item._id} className="task-row">
+              <tr key={item._id} className={`task-row ${item.status === 'Completed' ? 'row-completed' : ''}`}>
                 <td>
                   <input
                     type="checkbox"
@@ -141,8 +157,16 @@ const TaskList = () => {
                   />
                 </td>
                 <td>{index + 1}</td>
-                <td>{item.title}</td>
-                <td>{item.description}</td>
+                <td className="task-title-cell">
+                  <span className={item.status === 'Completed' ? 'completed-text' : ''}>
+                    {item.title}
+                  </span>
+                </td>
+                <td>
+                  <span className={`status-badge ${(item.status || 'Pending').toLowerCase()}`}>
+                    {item.status || "Pending"}
+                  </span>
+                </td>
                 <td>
                   <span className="category-badge">{item.category || "General"}</span>
                 </td>
@@ -153,6 +177,12 @@ const TaskList = () => {
                 </td>
                 <td>{new Date(item.deadline || item.date).toLocaleDateString()}</td>
                 <td className="action-cell">
+                  <button 
+                    onClick={() => toggleComplete(item._id, item.status)}
+                    className={`complete-btn ${item.status === 'Completed' ? 'undo' : ''}`}
+                  >
+                    {item.status === "Completed" ? "Undo" : "Complete"}
+                  </button>
                   <Link to={`/update/${item._id}`} className="update-btn">
                     Update
                   </Link>

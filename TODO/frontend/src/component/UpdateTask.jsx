@@ -19,7 +19,7 @@ export default function UpdateTask() {
 
   // Fetch existing task data on component mount
   useEffect(() => {
-    fetch(`http://localhost:4000/api/task/${id}`, { credentials: "include" })
+    fetch(`${import.meta.env.VITE_API_URL}/api/task/${id}`, { credentials: "include" })
       .then(res => res.json())
       .then(data => {
         console.log("Fetched task data:", data);
@@ -37,7 +37,7 @@ export default function UpdateTask() {
 
   const handleUpdate = async () => {
     try {
-      const response = await fetch(`http://localhost:4000/api/task/${id}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/task/${id}`, {
         method: 'PUT',
         headers: {
           "Content-Type": "application/json",
@@ -62,7 +62,7 @@ export default function UpdateTask() {
   const handleGenerateSubtasks = async () => {
     setIsGenerating(true);
     try {
-      const response = await fetch(`http://localhost:4000/api/task/${id}/generate-subtasks`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/task/${id}/generate-subtasks`, {
         method: 'POST',
         credentials: 'include'
       });
@@ -83,7 +83,7 @@ export default function UpdateTask() {
   const toggleSubtask = async (subtaskId, currentStatus) => {
     setSubtasks(prev => prev.map(st => st._id === subtaskId ? { ...st, completed: !currentStatus } : st));
     try {
-      const response = await fetch(`http://localhost:4000/api/task/${id}/subtask/${subtaskId}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/task/${id}/subtask/${subtaskId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ completed: !currentStatus }),
@@ -104,7 +104,7 @@ export default function UpdateTask() {
   const getAIAdvice = async () => {
     setIsFetchingAdvice(true);
     try {
-      const response = await fetch(`http://localhost:4000/api/task/${id}/advice`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/task/${id}/advice`, {
         credentials: "include"
       });
       const data = await response.json();
