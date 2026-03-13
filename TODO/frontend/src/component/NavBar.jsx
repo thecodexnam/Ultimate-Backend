@@ -25,7 +25,7 @@ const NavBar = () => {
 
   const handleLogout = async () => {
     try {
-      await fetch("http://localhost:4000/api/auth/logout", {
+      await fetch(`${import.meta.env.VITE_API_URL}/api/auth/logout`, {
         method: "POST",
         credentials: "include",
       });
@@ -44,6 +44,8 @@ const NavBar = () => {
       <ul className='nav-links'>
         <li><Link to="/">List</Link></li>
         {user && <li><Link to="/add">Add Task</Link></li>}
+        {user && <li><Link to="/planner">Daily Planner</Link></li>}
+        {user && <li><Link to="/insights">Insights</Link></li>}
         <li>
           {user ? (
             <>
