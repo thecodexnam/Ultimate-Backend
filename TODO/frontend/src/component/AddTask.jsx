@@ -17,7 +17,7 @@ const AddTask = () => {
     setIsCreating(true);
 
     try {
-      const response = await fetch("http://localhost:4000/api/add-task", {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/add-task`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
