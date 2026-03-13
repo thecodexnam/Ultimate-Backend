@@ -4,6 +4,8 @@ import { Routes, Route } from 'react-router-dom'
 import AddTask from './component/AddTask'
 import TaskList from './component/TaskList'
 import UpdateTask from './component/UpdateTask'
+import DailyPlanner from './component/DailyPlanner'
+import Insights from './component/Insights'
 import Login from './component/Login'
 import Signup from './component/SignUp'
 
@@ -27,6 +29,16 @@ const App = () => {
         <Route path='/update/:id' element={
           <ProtectedRoute>
             <UpdateTask />
+          </ProtectedRoute>
+        } />
+        <Route path='/planner' element={
+          <ProtectedRoute>
+            <DailyPlanner />
+          </ProtectedRoute>
+        } />
+        <Route path='/insights' element={
+          <ProtectedRoute>
+            <Insights />
           </ProtectedRoute>
         } />
         <Route path='/login' element={<Login />} />
