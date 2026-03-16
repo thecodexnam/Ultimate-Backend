@@ -1,6 +1,12 @@
 import jwt from "jsonwebtoken";
 
-const JWT_SECRET = process.env.JWT_SECRET || "your_jwt_secret_key";
+const getJwtSecret = () => {
+    const secret = process.env.JWT_SECRET;
+    if (!secret) {
+        console.warn("WARNING: JWT_SECRET environment variable is missing.");
+    }
+    return secret;
+};
 
 export const verifyJWTToken = (req, res, next) => {
     const token = req.cookies['token'];
@@ -11,7 +17,7 @@ export const verifyJWTToken = (req, res, next) => {
         });
     }
 
-    jwt.verify(token, JWT_SECRET, (err, decoded) => {
+    jwt.verify(token, getJwtSecret(), (err, decoded) => {
         if (err) {
             return res.status(401).json({
                 success: false,
