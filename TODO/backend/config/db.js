@@ -2,7 +2,10 @@ import mongoose from "mongoose";
 
 const ConnectDB = async () => {
     try {
-        const MongoURL = process.env.MONGO_URL || "mongodb+srv://naman70205_db_user:Naman9818@cluster0.7dlhhow.mongodb.net/";
+        const MongoURL = process.env.MONGO_URL;
+        if (!MongoURL) {
+            throw new Error("MONGO_URL environment variable is missing");
+        }
         await mongoose.connect(MongoURL);
         console.log("DataBase Connected Successfully");
     } catch (error) {

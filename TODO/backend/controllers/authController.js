@@ -2,7 +2,10 @@ import User from "../models/User.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
-const JWT_SECRET = process.env.JWT_SECRET || "your_jwt_secret_key";
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) {
+    console.warn("WARNING: JWT_SECRET environment variable is missing. Authentication may fail.");
+}
 
 export const signup = async (req, res) => {
     try {
