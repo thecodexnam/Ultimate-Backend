@@ -2,10 +2,13 @@ import User from "../models/User.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
-const JWT_SECRET = process.env.JWT_SECRET;
-if (!JWT_SECRET) {
-    console.warn("WARNING: JWT_SECRET environment variable is missing. Authentication may fail.");
-}
+const getJwtSecret = () => {
+    const secret = process.env.JWT_SECRET;
+    if (!secret) {
+        console.warn("WARNING: JWT_SECRET environment variable is missing.");
+    }
+    return secret;
+};
 
 export const signup = async (req, res) => {
     try {
@@ -32,7 +35,7 @@ export const signup = async (req, res) => {
             name: newUser.name,
         };
 
-        const token = jwt.sign(payload, JWT_SECRET, { expiresIn: "1h" });
+        const token = jwt.sign(payload, getJwtSecret(), { expiresIn: "1h" });
 
         res.cookie("token", token, {
             httpOnly: true,
@@ -89,7 +92,7 @@ export const login = async (req, res) => {
             name: user.name,
         };
 
-        const token = jwt.sign(payload, JWT_SECRET, { expiresIn: "1h" });
+        const token = jwt.sign(payload, getJwtSecret(), { expiresIn: "1h" });
 
         res.cookie("token", token, {
             httpOnly: true,
