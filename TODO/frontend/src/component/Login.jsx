@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import "../style/addtask.css"; // same theme
+import "../style/auth.css";
 
 const Login = () => {
   const [loginData, setLoginData] = useState({
@@ -56,40 +56,47 @@ const Login = () => {
   };
 
   return (
-    <div className="add-task-container">
-      <h1>Login to Your Account</h1>
+    <div className="auth-container">
+      <div className="auth-card">
+        <h1>Welcome Back</h1>
+        <p className="auth-subtitle">Log in to check your tasks and advice.</p>
 
-      <form className="add-task-form" onSubmit={handleLogin}>
-        <div className="form-group">
-          <label>Email</label>
-          <input
-            type="email"
-            placeholder="Enter your email"
-            value={loginData.email}
-            onChange={(e) =>
-              setLoginData({ ...loginData, email: e.target.value })
-            }
-            required
-          />
-        </div>
+        <form className="auth-form" onSubmit={handleLogin}>
+          <div className="form-group">
+            <label>Email</label>
+            <input
+              type="email"
+              placeholder="name@example.com"
+              value={loginData.email}
+              onChange={(e) =>
+                setLoginData({ ...loginData, email: e.target.value })
+              }
+              required
+            />
+          </div>
 
-        <div className="form-group">
-          <label>Password</label>
-          <input
-            type="password"
-            placeholder="Enter your password"
-            value={loginData.password}
-            onChange={(e) =>
-              setLoginData({ ...loginData, password: e.target.value })
-            }
-            required
-          />
-        </div>
-        <Link to="/signup" className="signup-link">Don't have an account? Sign Up</Link>
-        <button type="submit" className="submit-btn">
-          Login
-        </button>
-      </form>
+          <div className="form-group">
+            <label>Password</label>
+            <input
+              type="password"
+              placeholder="••••••••"
+              value={loginData.password}
+              onChange={(e) =>
+                setLoginData({ ...loginData, password: e.target.value })
+              }
+              required
+            />
+          </div>
+
+          <button type="submit" className="auth-btn">
+            Login
+          </button>
+        </form>
+
+        <p className="auth-link">
+          Don't have an account? <Link to="/signup">Sign Up</Link>
+        </p>
+      </div>
     </div>
   );
 };
