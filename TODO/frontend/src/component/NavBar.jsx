@@ -1,26 +1,58 @@
 import React, { useState, useEffect } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import '../style/NavBar.css'
 
 const NavBar = () => {
   const [user, setUser] = useState(null)
+  const [isVoiceEnabled, setIsVoiceEnabled] = useState(false)
   const navigate = useNavigate()
+  const location = useLocation()
+
+  const speak = (text) => {
+    if (!isVoiceEnabled || !window.speechSynthesis) return
+    window.speechSynthesis.cancel()
+    const utterance = new SpeechSynthesisUtterance(text)
+    utterance.rate = 1.0
+    utterance.pitch = 1.1
+    window.speechSynthesis.speak(utterance)
+  }
 
   useEffect(() => {
-    const checkUser = () => {
-      const loggedUser = localStorage.getItem('user')
-      setUser(loggedUser || null)
-    }
+    if (!isVoiceEnabled) return;
+    
+    const path = location.pathname;
+    if (path === '/') speak("Processing task headquarters. Your objectives are ready.");
+    if (path === '/focus') speak("Entering deep work zone. Neural focus initiated.");
+    if (path === '/insights') speak("Analyzing performance architecture. Let's look at the data.");
+    if (path === '/planner') speak("Reviewing your strategic roadmap for today.");
+    if (path === '/profile') speak("Retrieving your neural rank and progression stats.");
+  }, [location.pathname, isVoiceEnabled]);
 
-    // Check on mount
+  const checkUser = async () => {
+    const loggedUser = localStorage.getItem('user')
+    if (loggedUser) {
+      try {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/profile`, {
+          credentials: "include",
+        });
+        const data = await res.json();
+        if (data.success) {
+          setUser(data.user);
+        } else {
+          setUser({ email: loggedUser }); // Fallback
+        }
+      } catch (err) {
+        setUser({ email: loggedUser });
+      }
+    } else {
+      setUser(null);
+    }
+  }
+
+  useEffect(() => {
     checkUser()
-
-    // Listen for cross-tab login/logout events or custom dispatch
     window.addEventListener('storage', checkUser)
-
-    return () => {
-      window.removeEventListener('storage', checkUser)
-    }
+    return () => window.removeEventListener('storage', checkUser)
   }, [])
 
   const handleLogout = async () => {
@@ -40,20 +72,38 @@ const NavBar = () => {
 
   return (
     <nav className='navbar'>
-      <div className='logo'>TO DO APP</div>
+      <div className='logo-container'>
+        <div className='logo'>ZENITH AI</div>
+        {user?.level && <span className='level-badge'>Lvl {user.level}</span>}
+      </div>
       <ul className='nav-links'>
-        <li><Link to="/">List</Link></li>
-        {user && <li><Link to="/add">Add Task</Link></li>}
-        {user && <li><Link to="/planner">Daily Planner</Link></li>}
+        <li><Link to="/">Tasks</Link></li>
+        {user && <li><Link to="/planner">Planner</Link></li>}
         {user && <li><Link to="/insights">Insights</Link></li>}
+        {user && <li><Link to="/focus">Focus</Link></li>}
+        {user && <li><Link to="/profile">Profile</Link></li>}
+        {user && (
+          <li>
+            <button 
+              onClick={() => {
+                const newState = !isVoiceEnabled;
+                setIsVoiceEnabled(newState);
+                if (newState) speak("Coach Voice enabled. I'm here to help!");
+              }} 
+              className='icon-btn'
+              title={isVoiceEnabled ? "Mute Coach" : "Unmute Coach"}
+            >
+              {isVoiceEnabled ? "🔊" : "🔇"}
+            </button>
+          </li>
+        )}
         <li>
           {user ? (
-            <>
-              <span className='user-info'>Welcome, {user}</span>
+            <div className='user-section'>
               <button onClick={handleLogout} className='logout-btn'>Logout</button>
-            </>
+            </div>
           ) : (
-            <Link to="/login">Login</Link>
+            <Link to="/login" className='auth-link'>Login</Link>
           )}
         </li>
       </ul>
