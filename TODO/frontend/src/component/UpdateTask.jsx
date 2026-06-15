@@ -1,207 +1,148 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import "../style/updateTask.css";
+import "../style/form.css";
 
-export default function UpdateTask() {
-
+const UpdateTask = () => {
+  const { id } = useParams();
   const navigate = useNavigate();
-  const { id } = useParams();   // ✅ Get ID from URL
-
-  const [taskData, setTaskData] = useState({
-    title: "",
-    description: "",
-  });
+  
+  const [task, setTask] = useState({ title: "", description: "" });
   const [subtasks, setSubtasks] = useState([]);
-  const [isGenerating, setIsGenerating] = useState(false);
   const [advice, setAdvice] = useState(null);
-  const [isFetchingAdvice, setIsFetchingAdvice] = useState(false);
+  
+  const [uiState, setUiState] = useState({
+    updating: false,
+    generating: false,
+    fetchingAdvice: false
+  });
 
-
-  // Fetch existing task data on component mount
   useEffect(() => {
     fetch(`${import.meta.env.VITE_API_URL}/api/task/${id}`, { credentials: "include" })
       .then(res => res.json())
       .then(data => {
-        console.log("Fetched task data:", data);
-
-        setTaskData({
-          title: data.title,
-          description: data.description,
-          priority: data.priority,
-          category: data.category,
-          estimatedHours: data.estimatedHours
-        });
+        setTask(data);
         setSubtasks(data.subtasks || []);
       });
   }, [id]);
 
   const handleUpdate = async () => {
+    setUiState(prev => ({ ...prev, updating: true }));
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/task/${id}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/task/${id}`, {
         method: 'PUT',
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(taskData),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(task),
         credentials: "include",
-      })
-
-      const data = await response.json()
-      console.log(data)
-
-      if (data.success) {
-        navigate("/")
-      }
-      alert(data.message)
-
-    } catch (error) {
-      console.log("error", error)
+      });
+      if (res.ok) navigate("/");
+    } catch (err) {
+      alert("Update failed");
+    } finally {
+      setUiState(prev => ({ ...prev, updating: false }));
     }
-  }
+  };
 
-  const handleGenerateSubtasks = async () => {
-    setIsGenerating(true);
+  const generateSubtasks = async () => {
+    setUiState(prev => ({ ...prev, generating: true }));
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/task/${id}/generate-subtasks`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/task/${id}/generate-subtasks`, {
         method: 'POST',
         credentials: 'include'
       });
-      const data = await response.json();
-      if (data.success) {
-        setSubtasks(data.subtasks);
-      } else {
-        alert(data.message);
-      }
-    } catch (error) {
-      console.error("Error generating subtasks:", error);
-      alert("Failed to generate subtasks");
+      const data = await res.json();
+      if (data.success) setSubtasks(data.subtasks);
     } finally {
-      setIsGenerating(false);
+      setUiState(prev => ({ ...prev, generating: false }));
     }
   };
 
-  const toggleSubtask = async (subtaskId, currentStatus) => {
-    setSubtasks(prev => prev.map(st => st._id === subtaskId ? { ...st, completed: !currentStatus } : st));
-    try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/task/${id}/subtask/${subtaskId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ completed: !currentStatus }),
-        credentials: 'include'
-      });
-      const data = await response.json();
-      if (!data.success) {
-        setSubtasks(prev => prev.map(st => st._id === subtaskId ? { ...st, completed: currentStatus } : st));
-        alert(data.message);
-      }
-    } catch (error) {
-      console.error("Error updating subtask:", error);
-      setSubtasks(prev => prev.map(st => st._id === subtaskId ? { ...st, completed: currentStatus } : st));
-      alert("Failed to update subtask");
-    }
+  const toggleSubtask = async (stId, current) => {
+    setSubtasks(prev => prev.map(s => s._id === stId ? { ...s, completed: !current } : s));
+    await fetch(`${import.meta.env.VITE_API_URL}/api/task/${id}/subtask/${stId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ completed: !current }),
+      credentials: 'include'
+    });
   };
 
-  const getAIAdvice = async () => {
-    setIsFetchingAdvice(true);
+  const getAdvice = async () => {
+    setUiState(prev => ({ ...prev, fetchingAdvice: true }));
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/task/${id}/advice`, {
-        credentials: "include"
-      });
-      const data = await response.json();
-      if (data.success) {
-        setAdvice(data.advice);
-      } else {
-        alert(data.message);
-      }
-    } catch (error) {
-      console.error("Error fetching advice:", error);
-      alert("Failed to get AI advice");
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/task/${id}/advice`, { credentials: "include" });
+      const data = await res.json();
+      if (data.success) setAdvice(data.advice);
     } finally {
-      setIsFetchingAdvice(false);
+      setUiState(prev => ({ ...prev, fetchingAdvice: false }));
     }
   };
-
 
   return (
-    <div className="container">
-      <h1>Update Task</h1>
-      <label>Title</label>
-      <input
-        value={taskData.title}
-        onChange={(e) =>
-          setTaskData({ ...taskData, title: e.target.value })
-        }
-      />
+    <div className="form-container">
+      <h1 className="form-heading">Refine Task</h1>
 
-      <label>Description</label>
-      <textarea
-        value={taskData.description}
-        onChange={(e) =>
-          setTaskData({ ...taskData, description: e.target.value })
-        }
-      ></textarea>
-
-      {taskData.priority && (
-        <div className="ai-inferred-details">
-          <p><strong>🧠 AI Insights:</strong></p>
-          <div className="insight-tags">
-            <span className={`badge priority-${(taskData.priority || '').toLowerCase()}`}>Priority: {taskData.priority}</span>
-            <span className="category-badge">Category: {taskData.category}</span>
-            <span className="hours-badge">Est. Hours: {taskData.estimatedHours}h</span>
-          </div>
+      <div className="main-form">
+        <div className="form-row">
+          <label>Title</label>
+          <input 
+            value={task.title} 
+            onChange={e => setTask({...task, title: e.target.value})} 
+          />
         </div>
-      )}
 
-      <button className="submit" onClick={handleUpdate}>
-        Update Task
-      </button>
+        <div className="form-row">
+          <label>Description</label>
+          <textarea 
+            value={task.description} 
+            onChange={e => setTask({...task, description: e.target.value})} 
+          />
+        </div>
 
-      <div className="subtasks-section">
-        <h3>Subtasks (AI Generated)</h3>
+        <button className="submit-btn-premium" onClick={handleUpdate} disabled={uiState.updating}>
+          {uiState.updating ? "Saving Changes..." : "Update Task"}
+        </button>
+      </div>
+
+      {/* AI Breakdown Section */}
+      <div className="ai-section-card">
+        <h3>✨ AI Breakdown</h3>
         {subtasks.length === 0 ? (
-          <button
-            className="ai-btn"
-            onClick={handleGenerateSubtasks}
-            disabled={isGenerating}
-          >
-            {isGenerating ? "Generating..." : "✨ Generate AI Breakdown"}
+          <button className="ai-btn-outline" onClick={generateSubtasks} disabled={uiState.generating}>
+            {uiState.generating ? "Breaking it down..." : "Generate Subtasks"}
           </button>
         ) : (
-          <ul className="subtasks-list">
-            {subtasks.map((st) => (
-              <li key={st._id} className={st.completed ? "completed" : ""}>
-                <label className="subtask-label">
-                  <input
-                    type="checkbox"
-                    checked={st.completed}
-                    onChange={() => toggleSubtask(st._id, st.completed)}
-                  />
-                  <span>{st.title}</span>
-                </label>
-              </li>
+          <div className="subtasks-list">
+            {subtasks.map(st => (
+              <div key={st._id} className={`subtask-item ${st.completed ? 'completed' : ''}`}>
+                <input 
+                  type="checkbox" 
+                  checked={st.completed} 
+                  onChange={() => toggleSubtask(st._id, st.completed)} 
+                />
+                <span>{st.title}</span>
+              </div>
             ))}
-          </ul>
+          </div>
         )}
       </div>
 
-      <div className="advice-section">
-        <h3>Procrastination Buster</h3>
+      {/* AI Advice Section */}
+      <div className="ai-section-card" style={{ borderLeftColor: 'var(--success-color)' }}>
+        <h3>💡 Procrastination Buster</h3>
         {!advice ? (
-          <button
-            className="ai-btn advice-btn"
-            onClick={getAIAdvice}
-            disabled={isFetchingAdvice}
-          >
-            {isFetchingAdvice ? "Thinking..." : "💡 Get AI Advice"}
+          <button className="ai-btn-outline" onClick={getAdvice} disabled={uiState.fetchingAdvice}>
+            {uiState.fetchingAdvice ? "Analyzing..." : "Get AI Advice"}
           </button>
         ) : (
-          <div className="advice-box">
-            <p className="advice-tip"><strong>Tip:</strong> {advice.tip}</p>
-            <p className="advice-action"><strong>First Step:</strong> {advice.action}</p>
-            <button className="clear-advice" onClick={() => setAdvice(null)}>Close</button>
+          <div className="advice-box-premium">
+            <p><strong>Coach says:</strong> {advice.tip}</p>
+            <p><strong>Micro-Action:</strong> {advice.action}</p>
+            <button className="icon-btn" style={{marginTop: '0.5rem'}} onClick={() => setAdvice(null)}>Close</button>
           </div>
         )}
       </div>
     </div>
   );
-}
+};
+
+export default UpdateTask;
