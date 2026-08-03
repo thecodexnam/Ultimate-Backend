@@ -1,95 +1,75 @@
 import React, { useState } from "react";
-import { useNavigate } from 'react-router-dom'
-import "../style/addtask.css";
+import { useNavigate } from 'react-router-dom';
+import "../style/form.css";
 
 const AddTask = () => {
-  const [taskData, setTaskData] = useState({
-    title: "",
-    description: "",
-    deadline: ""
-  });
-  const [isCreating, setIsCreating] = useState(false);
-
+  const [task, setTask] = useState({ title: "", description: "", deadline: "" });
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleAddTask = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsCreating(true);
+    setLoading(true);
 
     try {
       const response = await fetch(`${import.meta.env.VITE_API_URL}/api/add-task`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(taskData),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(task),
         credentials: "include",
       });
 
-      const result = await response.json();
-
       if (response.ok) {
-        console.log("Task Added Successfully ✅", result);
-        navigate("/")
-
-        // Reset form after success
-        setTaskData({
-          title: "",
-          description: "",
-          deadline: ""
-        });
+        navigate("/");
       } else if (response.status === 401) {
-        console.log("Unauthorized request, please log in again.");
         localStorage.clear();
         navigate("/login");
-      } else {
-        console.log("Error:", result.message);
       }
     } catch (error) {
-      console.log("Server Error:", error.message);
+      console.error("Failed to add task:", error);
     } finally {
-      setIsCreating(false);
+      setLoading(false);
     }
   };
 
   return (
-    <div className="add-task-container">
-      <h1>Add New Task here</h1>
-      <form className="add-task-form" onSubmit={handleAddTask}>
-        <div className="form-group">
-          <label>Task Title</label>
+    <div className="form-container">
+      <h1 className="form-heading">Create New Task</h1>
+      
+      <form className="main-form" onSubmit={handleSubmit}>
+        <div className="form-row">
+          <label>Title</label>
           <input
             type="text"
-            placeholder="Enter Task Title"
-            onChange={(e) =>
-              setTaskData({ ...taskData, title: e.target.value })
-            }
+            required
+            placeholder="What needs to be done?"
+            value={task.title}
+            onChange={(e) => setTask({ ...task, title: e.target.value })}
           />
         </div>
 
-        <div className="form-group">
-          <label>Task Description</label>
+        <div className="form-row">
+          <label>Description</label>
           <textarea
-            placeholder="Enter Task Description"
-            onChange={(e) =>
-              setTaskData({ ...taskData, description: e.target.value })
-            }
-          ></textarea>
+            required
+            placeholder="Provide some details for the AI coach..."
+            value={task.description}
+            onChange={(e) => setTask({ ...task, description: e.target.value })}
+          />
         </div>
 
-        <div className="form-group">
+        <div className="form-row">
           <label>Deadline</label>
           <input
             type="date"
-            placeholder="Enter Deadline"
-            onChange={(e) =>
-              setTaskData({ ...taskData, deadline: e.target.value })
-            }
+            required
+            value={task.deadline}
+            onChange={(e) => setTask({ ...task, deadline: e.target.value })}
           />
         </div>
 
-        <button type="submit" className="submit-btn" disabled={isCreating}>
-          {isCreating ? "Analyzing with AI..." : "Add Task"}
+        <button type="submit" className="submit-btn-premium" disabled={loading}>
+          {loading ? "Coach is thinking... 🧠" : "Save Task"}
         </button>
       </form>
     </div>
