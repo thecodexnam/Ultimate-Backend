@@ -4,24 +4,17 @@ import "../style/dailyPlanner.css";
 const DailyPlanner = () => {
     const [plan, setPlan] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
 
     const fetchDailyPlan = async () => {
         setLoading(true);
-        setError(null);
         try {
             const response = await fetch(`${import.meta.env.VITE_API_URL}/api/daily-plan`, {
                 credentials: "include",
             });
             const data = await response.json();
-            if (data.success) {
-                setPlan(data.plan);
-            } else {
-                setError(data.message || "Failed to generate plan");
-            }
+            if (data.success) setPlan(data.plan);
         } catch (err) {
-            console.error("Error fetching daily plan:", err);
-            setError("Server error. Please try again later.");
+            console.error(err);
         } finally {
             setLoading(false);
         }
@@ -33,39 +26,32 @@ const DailyPlanner = () => {
 
     return (
         <div className="daily-planner-container">
-            <h1>AI Daily Planner</h1>
-            <p className="subtitle">Your optimized schedule for today (9:00 AM - 5:00 PM)</p>
+            <header className="planner-header">
+                <h1>Coach's Daily Plan</h1>
+                <p className="subtitle">Your AI-optimized workflow for a productive today.</p>
+            </header>
 
             <div className="planner-controls">
-                <button 
-                    className="generate-btn" 
-                    onClick={fetchDailyPlan} 
-                    disabled={loading}
-                >
-                    {loading ? "Optimizing..." : "✨ Regenerate Schedule"}
+                <button className="auth-btn" style={{marginTop: 0}} onClick={fetchDailyPlan} disabled={loading}>
+                    {loading ? "Re-optimizing..." : "✨ Refresh Schedule"}
                 </button>
             </div>
 
-            {loading && (
-                <div className="loading-state">
-                    <p>🤖 AI is organizing your day...</p>
+            {loading ? (
+                <div className="loader-container">
+                    <h2>🧠 Coach is strategizing...</h2>
+                    <p>Building your perfect 9-to-5 schedule based on priorities.</p>
                 </div>
-            )}
-
-            {error && (
-                <div className="error-state">
-                    <p>⚠️ {error}</p>
+            ) : plan.length === 0 ? (
+                <div className="empty-container">
+                    <p>No tasks found to organize. Head to the Dashboard to add some!</p>
                 </div>
-            )}
-
-            {!loading && !error && plan.length === 0 && (
-                <div className="empty-state">
-                    <p>No tasks found to plan. Add some tasks first!</p>
-                </div>
-            )}
-
-            {!loading && !error && plan.length > 0 && (
-                <div className="plan-list">
+            ) : (
+                <div className="timeline">
+                    <div className="planner-coach-tip">
+                        <span>💡</span>
+                        <p>Focus on your High-priority blocks first. Coach has allocated realistic time for deep work.</p>
+                    </div>
                     {plan.map((item, index) => (
                         <div key={index} className="plan-item">
                             <div className="item-time">{item.time}</div>
