@@ -5,10 +5,12 @@ import bcrypt, { hash } from 'bcrypt'
 
 import uploadOnCloudinary from "../config/CLOUDINARY.js"
 
+// Basic health check endpoint for the authentication backend.
 export const homepage = async (req, res) => {
   return res.json({ message: "This is our Home Page that running on port no 8000" })
 }
 
+// Handle new user registration, password hashing, profile image upload, and token creation.
 export const signup = async (req, res) => {
   try {
     const { firstName, lastName, email, passWord, userName } = req.body;
@@ -76,6 +78,7 @@ export const signup = async (req, res) => {
   }
 };
 
+// Validate login credentials, compare the password, and issue a session token.
 export const login = async (req, res) => {
   try {
     const { email, passWord } = req.body;
@@ -127,6 +130,7 @@ export const login = async (req, res) => {
   }
 };
 
+// Clear the auth cookie so the user is logged out from the browser.
 export const logout = async (req, res) => {
   try {
     const isProd =
@@ -144,6 +148,7 @@ export const logout = async (req, res) => {
   }
 }
 
+// Return the currently authenticated user's profile information.
 export const getUserData = async (req, res) => {
   try {
     const userId = req.userId;
