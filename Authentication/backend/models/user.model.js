@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 // ============================================
 // USER DATABASE SCHEMA
-// This defines what a "User" looks like in our database.
+// This defines the structure of a user document in MongoDB.
 // ============================================
 const UserSchema = new mongoose.Schema({
     firstName: {
