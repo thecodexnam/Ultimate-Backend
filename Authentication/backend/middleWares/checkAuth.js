@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 
 // ============================================
 // CHECK AUTH MIDDLEWARE
-// This function runs BEFORE protected routes to make sure the user is logged in.
+// This function runs before protected routes to ensure the user is logged in.
 // ============================================
 export const checkAuth = (req, res, next) => {
     try {
