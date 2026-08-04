@@ -5,7 +5,7 @@ dotenv.config()
 
 // ============================================
 // TOKEN GENERATOR
-// This function creates a digital "badge" (JWT) for the user.
+// This function creates a signed JWT token for the user after login or signup.
 // ============================================
 const generateToken = async (id) => {
     // jwt.sign params:
