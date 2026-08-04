@@ -1,57 +1,89 @@
-import express from 'express'
-import { use } from 'react';
+import express from "express";
+import mongoose from "mongoose";
+import User from "./schema.js";
 
-const port = 4444
+const Mongo_URL ="mongodb+srv://naman70205_db_user:Naman%401234@cluster0.od6p7s0.mongodb.net/"
+const ConnectDB = async () => {
+  try {
+    await mongoose.connect(Mongo_URL);
+    console.log("DataBase connect Successfully");
+  } catch (error) {
+  console.error("DB connection error:", error);
+}
+};
 
-const server = express();
+const app = express();
+app.use(express.json());
+//port = port is used to specify the port on which the server will run
+let port = 4000;
 
-const users = [
-    {id:1,
-     name:"Naman",
-     role:"Developer"
-    },
-    {id:2,
-     name:"Rohan",
-     role:"UI/UX developer"
-    },
-    {id:3,
-     name:"CodeXnam",
-     role:"Backend Developer"
-    },
-    { id:4,
-    name:"Something",
-    role:"Tester"
+
+app.get("/", (req, res) => {
+  res.json({ message: "This is the home page of our server" });
+});
+
+//SignUp API
+app.post("/signup", async (req, res) => {
+  try {
+    const{name,email,password} = req.body;
+    if(!name|| !email || !password){
+       return res.json({message:"fill all the details"})
+    }
+    const newUser = await User.create({
+        name,
+        email,
+        password
+    })
+    res.status(201).json({message:"User created Successfully",newUser})
+
+  } catch (error) {
+    return res.status(500).json({message:error})
+  }
+});
+
+//Login API
+app.post("/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    const existUser = await User.findOne({ email });
+
+    if (!existUser) {
+      return res.status(400).json({ message: "User does not exist" });
     }
 
-]
-
-server.get("/",(req,res)=>{
-    res.send("This is over server that created by express JS")
-})
-
-server.get("/user",(req,res)=>{
-    const{name,age} = req.query
-    res.send(`The name of user is ${name} and the age is ${age}`)
-})
-
-server.get("/access/:id",(req,res)=>{
-    const id = Number(req.params.id);
-    console.log(`the id is ${id}`)
-    const user = users.find(user => user.id === id)
-
-    if(!user){
-        res.status(400).send(`Invalid Id`)
+    if (existUser.password !== password) {
+      return res.status(400).json({ message: "Wrong password" });
     }
-    else{
-        res.json(user)
-    }
-})
 
-server.listen(port,()=>{
-    console.log(`this server run on port number ${port}`)
-})
+    return res.status(200).json({
+      message: "User login successfully",
+      existUser,
+    });
 
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
 
+app.get("/account", (req, res) => {
+  res.json({ users });
+});
+
+// listen = listen is used to start the server on the  specified port that we have given
+app.listen(port, () => {
+  console.log(`server is running on port no ${port}`);
+  ConnectDB();
+});
+
+// app.get("/users/:id",(req,res)=>{
+//     const id = Number(req.params.id)
+//     const user = users.find(user => user.id === id)
+//     if(!user){
+//         return res.status(404).json({message:"User not found"})
+//     }
+//     res.json(user)
+// })
 
 // import express from "express"
 // import cors from "cors"
@@ -64,7 +96,6 @@ server.listen(port,()=>{
 // server.use(express.json())// cliend Sends data is JSON , Server Doesn't understand JSON by default. express.json() is like a translator that convert JSON Data into JS Object
 
 // const password = "Naman1234"
-
 
 // server.get("/",(req,res)=>{
 //     res.send("<h1>This is our Home Page and also a Main Page </h1>")
@@ -79,8 +110,6 @@ server.listen(port,()=>{
 
 //   res.json(response); // send data to client
 // });
-
-
 
 // //Post API to received Data from frontend
 // server.post("/",(req,res)=>{
@@ -107,12 +136,7 @@ server.listen(port,()=>{
 //     console.log(`Server is running on port ${port}`);
 // })
 
-
-
-
 // Frontend - middleware - Backend
-
-
 
 // import express from "express"
 
@@ -143,7 +167,6 @@ server.listen(port,()=>{
 //     res.send(`Fetching the user with name ${name} and ${age}`)
 // })
 
-
 // server.listen(port,()=>{
 //     console.log(`This server is running on port ${port}`)
 // })
@@ -151,14 +174,11 @@ server.listen(port,()=>{
 // app api == rest aPI
 // rest Api != Api
 
-
-
 // const users = [
 //   { id: 1, name: "Naman", role: "Developer" },
 //   { id: 2, name: "Amit", role: "Designer" },
 //   { id: 3, name: "Rohit", role: "Tester" }
 // ];
-
 
 // server.get("/",(req,res)=>{
 //     res.send("This is our express Js Server")
@@ -174,12 +194,8 @@ server.listen(port,()=>{
 //     else{
 //         res.json(user)
 //     }
-    
+
 // })
-
-
-
-
 
 // import http from "http";
 
@@ -202,13 +218,8 @@ server.listen(port,()=>{
 //   console.log(`Server is started on port no ${port}`);
 // });
 
-
-
-
-
-
 // import express from "express"
-// import cors from "cors" // cross origin resourse 
+// import cors from "cors" // cross origin resourse
 
 // const server = express()
 // const port = 4000;
@@ -218,7 +229,6 @@ server.listen(port,()=>{
 //   { id: 2, name: "Amit", role: "Designer" },
 //   { id: 3, name: "Rohit", role: "Tester" }
 // ];
-
 
 // server.get('/',(req,res)=>{
 //     res.send("Hello I'm Home page")
@@ -241,7 +251,7 @@ server.listen(port,()=>{
 
 // server.listen(port,()=>{
 //     console.log(`Server Started on port no ${port}`);
-    
+
 // })
 
 // import http from 'http'
@@ -260,12 +270,9 @@ server.listen(port,()=>{
 //     }
 // })
 
-
 // server.listen(port,()=>{
 //     console.log('server is started on port no 4000')
 // })
-
-
 
 // const port = 5000;
 
@@ -279,8 +286,7 @@ server.listen(port,()=>{
 
 //     /* Remove Header */
 //     res.removeHeader("x-powered-by")
-    
-    
+
 //     res.status(200).json({
 //     name: "Naman",
 //     age: 20,
@@ -288,13 +294,11 @@ server.listen(port,()=>{
 //   });
 // });
 
-
 // server.post("/",(req,res)=>{
-//     console.log(req.body);    
+//     console.log(req.body);
 //     res.status(200).send({success:true})
 // })
 
 // server.listen(port,()=>{
 //     console.log(`Server is running on port ${port}`);
 // })
-
