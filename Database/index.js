@@ -5,15 +5,21 @@ dotenv.config()
 import cors from 'cors';
 import connectDB from "./Config/db.js";
 import userRouter from "./routes/User.routes.js";
+
 const server = express();
-const port = process.env.PORT || 5000
+const port = process.env.PORT || 5000;
+
+// Enable JSON parsing and CORS so the API can receive requests from the frontend.
 server.use(cors());
 server.use(express.json());
-server.use("/",userRouter)
 
+// Mount the user routes at the main entry point.
+server.use("/", userRouter);
+
+// Start the server and connect to MongoDB.
 server.listen(5555, () => {
-  console.log(`the server in run on port ${port}`);
-  connectDB()
+  console.log(`the server is running on port ${port}`);
+  connectDB();
 });
 
 
