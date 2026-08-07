@@ -1,9 +1,11 @@
 import User from "../models/User.model.js";
 
-export const home=(req, res) => {
+// Simple home route for the database API.
+export const home = (req, res) => {
   res.send("This is our home page");
-}
+};
 
+// Create one user document in MongoDB.
 export const create = async (req, res) => {
   try {
     let { name, age, email, username } = req.body;
@@ -21,7 +23,8 @@ export const create = async (req, res) => {
   }
 }
 
-export const read =  async (req,res)=>{
+// Example query using comparison operators.
+export const read = async (req, res) => {
     try {
     const user = await User.find({$and:[{age : {$gt:25}}, {name: {$ne: "Naman"}}]})
     return res.status(200).json(user)
@@ -30,6 +33,7 @@ export const read =  async (req,res)=>{
     }
 }
 
+// Return all users from the collection.
 export const readall = async (req, res) => {
   try {
     const usernames = await User.find();
@@ -39,6 +43,7 @@ export const readall = async (req, res) => {
   }
 }
 
+// Find a single user by name.
 export const search = async (req, res) => {
   try {
     let user = await User.findOne({ name: req.params.name });
@@ -48,6 +53,7 @@ export const search = async (req, res) => {
   }
 }
 
+// Insert multiple user documents at once.
 export const createmany = async (req, res) => {
   try {
     const users = req.body;
@@ -67,7 +73,8 @@ export const createmany = async (req, res) => {
   }
 }
 
-export const updateone =  async (req, res) => {
+// Update one matching user document.
+export const updateone = async (req, res) => {
   try {
     const name = req.params.name;
     const updateData = req.body;
