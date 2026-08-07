@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 
+// Task document structure for the planner and productivity experience.
 const taskSchema = new mongoose.Schema({
     title: {
         type: String,
