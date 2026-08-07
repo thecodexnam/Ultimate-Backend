@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 import { fileURLToPath } from 'url';
 import path from 'path';
 
+// Resolve the local environment file for this backend project.
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.resolve(__dirname, '.env') });
@@ -17,7 +18,7 @@ const app = express();
 const port = process.env.PORT || 4000;
 const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5173";
 
-// Middleware setup
+// Parse incoming JSON payloads and cookies for authentication.
 app.use(express.json());
 app.use(cors({
   origin: FRONTEND_URL,
@@ -25,11 +26,11 @@ app.use(cors({
 }));
 app.use(cookieParser());
 
-// Route setup
+// Register route groups for authentication and task management.
 app.use("/api/auth", authRoutes);
 app.use("/api", taskRoutes);
 
-// Home route
+// Simple health check endpoint for the backend.
 app.get("/", (req, res) => {
   res.json({
     message: "This is the Home Page",
@@ -37,7 +38,7 @@ app.get("/", (req, res) => {
   });
 });
 
-// Start Server
+// Start the server and connect to MongoDB once the app boots.
 app.listen(port, async () => {
   try {
     await ConnectDB();
