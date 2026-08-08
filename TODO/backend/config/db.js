@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 
+// Connect the app to MongoDB using the configured environment variable.
 const ConnectDB = async () => {
     try {
         const MongoURL = process.env.MONGO_URL;
