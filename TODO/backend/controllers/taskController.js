@@ -1,9 +1,12 @@
 import Task from "../models/Task.js";
+import User from "../models/User.js";
+import { sendEmail } from "../services/emailService.js";
+import * as ics from "ics";
 
-// Free model confirmed working on this OpenRouter account
+// The AI model used for coaching features such as categorization and planning.
 const OPENROUTER_MODEL = "openrouter/hunter-alpha";
 
-// Helper: call OpenRouter with a prompt and return the text response
+// Send a prompt to the AI provider and return the assistant's response text.
 async function callOpenRouter(prompt) {
     const apiKey = process.env.OPEN_ROUTER;
     if (!apiKey) throw new Error("OPEN_ROUTER API key is missing from .env");
@@ -14,7 +17,7 @@ async function callOpenRouter(prompt) {
             "Authorization": `Bearer ${apiKey}`,
             "Content-Type": "application/json",
             "HTTP-Referer": process.env.FRONTEND_URL || "http://localhost:5173",
-            "X-Title": "TODO App",
+            "X-Title": "Coach Tasker",
         },
         body: JSON.stringify({
             model: OPENROUTER_MODEL,
@@ -31,6 +34,7 @@ async function callOpenRouter(prompt) {
     return data.choices[0].message.content;
 }
 
+// Create a new task for the logged-in user and enrich it with AI suggestions.
 export const createTask = async (req, res) => {
     try {
         const { title, description, deadline } = req.body;
@@ -101,6 +105,7 @@ Do not include markdown formatting, backticks, or any other text.`;
     }
 };
 
+// Return all tasks owned by the current user.
 export const getTasks = async (req, res) => {
     try {
         const tasks = await Task.find({ userId: req.user.id });
@@ -117,6 +122,7 @@ export const getTasks = async (req, res) => {
     }
 };
 
+// Return one specific task when the user has permission to view it.
 export const getSingleTask = async (req, res) => {
     try {
         const { id } = req.params;
@@ -133,20 +139,51 @@ export const getSingleTask = async (req, res) => {
     }
 };
 
+// Update an existing task and apply XP changes when the status changes.
 export const updateTask = async (req, res) => {
     try {
         const { id } = req.params;
+        const oldTask = await Task.findOne({ _id: id, userId: req.user.id });
+        
+        if (!oldTask) {
+            return res.status(404).json({ success: false, message: "Task not found" });
+        }
+
         const updatedTask = await Task.findOneAndUpdate(
             { _id: id, userId: req.user.id },
             req.body,
             { new: true }
         );
 
-        if (!updatedTask) {
-            return res.status(404).json({
-                success: false,
-                message: "Task not found or unauthorized",
-            });
+        // Gamification: XP Reward logic
+        if (req.body.status && req.body.status !== oldTask.status) {
+            const user = await User.findById(req.user.id);
+            if (user) {
+                let xpGain = 0;
+                const priorityWeights = { High: 20, Medium: 10, Low: 5 };
+                const weight = priorityWeights[oldTask.priority] || 10;
+
+                if (req.body.status === "Completed") {
+                    xpGain = weight;
+                } else if (oldTask.status === "Completed") {
+                    xpGain = -weight;
+                }
+
+                if (xpGain !== 0) {
+                    user.xp += xpGain;
+                    // Simple leveling
+                    const newLevel = Math.floor(Math.sqrt(user.xp / 25)) + 1;
+                    if (newLevel > user.level) user.level = newLevel;
+                    
+                    // Update Rank
+                    if (user.xp > 1000) user.rank = "Grandmaster Coach";
+                    else if (user.xp > 500) user.rank = "Master Tactician";
+                    else if (user.xp > 200) user.rank = "Planning Expert";
+                    else if (user.xp > 50) user.rank = "Apprentice Coach";
+                    
+                    await user.save();
+                }
+            }
         }
 
         res.status(200).json({
@@ -155,13 +192,43 @@ export const updateTask = async (req, res) => {
             task: updatedTask,
         });
     } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: error.message,
-        });
+        res.status(500).json({ success: false, message: error.message });
     }
 };
 
+// Award XP for completed focus sessions and update the user's level/rank.
+export const awardFocusXP = async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id);
+        if (!user) {
+            return res.status(404).json({ success: false, message: "User not found" });
+        }
+
+        const xpGain = 50; // Reward for 25 min focus
+        user.xp += xpGain;
+
+        // Level logic
+        user.level = Math.floor(Math.sqrt(user.xp / 25)) + 1;
+
+        // Rank updates
+        if (user.xp > 1000) user.rank = "Grandmaster Coach";
+        else if (user.xp > 500) user.rank = "Master Tactician";
+        else if (user.xp > 200) user.rank = "Planning Expert";
+        else if (user.xp > 50) user.rank = "Apprentice Coach";
+
+        await user.save();
+
+        res.status(200).json({
+            success: true,
+            message: `Deep work complete! +${xpGain} XP earned.`,
+            user: { xp: user.xp, level: user.level, rank: user.rank }
+        });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+// Delete one task belonging to the current user.
 export const deleteTask = async (req, res) => {
     try {
         const { id } = req.params;
@@ -188,6 +255,7 @@ export const deleteTask = async (req, res) => {
     }
 };
 
+// Remove several tasks at once from the current user's list.
 export const deleteMultipleTasks = async (req, res) => {
     try {
         const { id } = req.body;
@@ -217,6 +285,7 @@ export const deleteMultipleTasks = async (req, res) => {
     }
 };
 
+// Use AI to generate a small set of actionable subtasks for a larger task.
 export const generateSubTasks = async (req, res) => {
     try {
         const { id } = req.params;
@@ -266,6 +335,7 @@ Return ONLY a valid JSON array of strings representing the subtask titles. For e
     }
 };
 
+// Toggle the completion state of one subtask inside a task.
 export const updateSubTaskStatus = async (req, res) => {
     try {
         const { id, subtaskId } = req.params;
@@ -294,6 +364,7 @@ export const updateSubTaskStatus = async (req, res) => {
     }
 };
 
+// Generate a short motivational tip and a quick starting action for a task.
 export const getTaskAdvice = async (req, res) => {
     try {
         const { id } = req.params;
@@ -334,6 +405,7 @@ Return ONLY a valid JSON object with two keys: "tip" and "action". Do not includ
     }
 };
 
+// Turn the user's task list into a structured daily plan with AI assistance.
 export const generateDailyPlan = async (req, res) => {
     try {
         const tasks = await Task.find({ userId: req.user.id });
@@ -375,6 +447,42 @@ Do not include markdown formatting or backticks.`;
     }
 };
 
+// Compose and email a brief daily productivity summary for the signed-in user.
+export const sendDailyReport = async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id);
+        const tasks = await Task.find({ userId: req.user.id });
+
+        if (!user || tasks.length === 0) {
+            return res.status(400).json({ success: false, message: "No data to report" });
+        }
+
+        const completed = tasks.filter(t => t.status === "Completed").length;
+        const pending = tasks.length - completed;
+
+        const html = `
+            <div style="font-family: sans-serif; padding: 20px; color: #333;">
+                <h2 style="color: #6366f1;">Zenith AI: Daily Briefing</h2>
+                <p>Hello <strong>${user.name}</strong>,</p>
+                <p>You're currently at <strong>Level ${user.level}</strong> (${user.rank}). Here's your status:</p>
+                <ul>
+                    <li>✅ Completed: ${completed}</li>
+                    <li>⏳ Pending: ${pending}</li>
+                </ul>
+                <p>Keep pushing! Every task completed brings you closer to your goals.</p>
+                <hr style="border: none; border-top: 1px solid #ddd;" />
+                <p style="font-size: 12px; color: #888;">Zenith AI - Your Neural Productivity Command Center</p>
+            </div>
+        `;
+
+        await sendEmail(user.email, "Your Coach Tasker Daily Briefing", html);
+
+        res.status(200).json({ success: true, message: "Report sent to your email!" });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+// Analyze task progress and return helpful productivity insights.
 export const getProductivityInsights = async (req, res) => {
     try {
         const tasks = await Task.find({ userId: req.user.id });
@@ -431,3 +539,38 @@ Return ONLY the bullet points as plain text. No JSON, no markdown code blocks.`;
     }
 };
 
+
+// Export the current user's deadlines as an .ics calendar file.
+export const exportCalendar = async (req, res) => {
+    try {
+        const tasks = await Task.find({ userId: req.user.id });
+        if (tasks.length === 0) {
+            return res.status(400).json({ success: false, message: "No tasks to export" });
+        }
+
+        const events = tasks.filter(t => t.deadline).map(t => {
+            const date = new Date(t.deadline);
+            return {
+                start: [date.getFullYear(), date.getMonth() + 1, date.getDate()],
+                duration: { hours: t.estimatedHours || 1 },
+                title: t.title,
+                description: t.description,
+                categories: [t.category],
+                status: t.status === "Completed" ? "CONFIRMED" : "TENTATIVE"
+            };
+        });
+
+        if (events.length === 0) {
+            return res.status(400).json({ success: false, message: "No tasks with deadlines to export" });
+        }
+
+        const { error, value } = ics.createEvents(events);
+        if (error) throw error;
+
+        res.setHeader("Content-Type", "text/calendar");
+        res.setHeader("Content-Disposition", "attachment; filename=coach_tasker.ics");
+        res.send(value);
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
