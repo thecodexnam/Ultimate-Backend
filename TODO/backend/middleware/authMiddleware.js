@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 
+// Keep the secret lookup consistent with the auth controller.
 const getJwtSecret = () => {
     const secret = process.env.JWT_SECRET;
     if (!secret) {
@@ -8,6 +9,7 @@ const getJwtSecret = () => {
     return secret;
 };
 
+// Verify the session token before allowing access to protected routes.
 export const verifyJWTToken = (req, res, next) => {
     const token = req.cookies['token'];
     if (!token) {
@@ -24,7 +26,9 @@ export const verifyJWTToken = (req, res, next) => {
                 message: "Unauthorized: Invalid token",
             });
         }
-        req.user = decoded; // Attach decoded user info to request
+
+        // Attach decoded user information to the request for later controllers.
+        req.user = decoded;
         next();
     });
 };
