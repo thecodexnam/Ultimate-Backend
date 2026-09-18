@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
 
-// Define the structure of a user document stored in MongoDB.
 const userSchema = new mongoose.Schema({
     name: {
         type: String,
